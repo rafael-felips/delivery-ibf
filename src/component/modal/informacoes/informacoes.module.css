@@ -1,0 +1,86 @@
+.fundo {
+    height: 100%;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.25);
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(5px);
+}
+
+.card {
+    width: 290px;
+    height: 350px;
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.card>h2 {
+    font-size: 24px;
+    font-weight: 700;
+    color: #03045E;
+    /* margin-bottom: 35px; */
+}
+
+.container {
+    /* background-color: red; */
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.container_titulo {
+    display: flex;
+    gap: 5px;
+}
+
+.container_titulo>h3 {
+    font-size: 20px;
+    color: #03045E;
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+    /* background-color: #0077b6; */
+}
+
+.container_informacoes {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.container_informacoes>a {
+    color: #232323;
+}
+
+.container_pagamento {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.container_pagamento>span {
+    background-color: #CAF0F8;
+    padding: 5px 10px;
+    border-radius: 30px;
+}
+
+.botao {
+    background-color: #0077b6;
+    color: #fff;
+    width: 100%;
+    height: 30px;
+    border-radius: 5px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+}

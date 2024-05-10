@@ -1,0 +1,83 @@
+.modal_overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+    
+}
+
+.modal {
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 5px;
+    width: 80%;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.modal>h1 {
+    margin-bottom: 10px;
+    color: #03045E;
+}
+
+.container_info {
+    display: flex;
+    flex-direction: column;
+    margin: 15px 0px;
+    gap: 3px;
+}
+
+.container_titulo {
+    display: flex;
+    font-size: 16px;
+    align-items: center;
+}
+
+.icon {
+    height: 18px;
+    margin-right: 5px;
+}
+
+.container_itens {
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+}
+
+.itens_preco {
+    display: flex;
+    justify-content: space-between;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 5px;
+}
+
+.total {
+    margin-top: 35px;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 35px;
+}
+
+.botao {
+    background-color: #0077B6;
+    padding: 10px;
+    color: #fff;
+    border-radius: 5px;
+    font-size: 24px;
+    font-weight: 700;
+    box-shadow: 0px 5px 15px -3px rgba(0, 0, 0, 0.4);
+    cursor: pointer;
+}

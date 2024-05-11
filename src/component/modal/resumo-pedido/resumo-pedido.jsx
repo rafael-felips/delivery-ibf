@@ -3,93 +3,76 @@ import style from './resumo-pedido.module.css';
 import user from '../../../assets/profile.svg'
 import local from "../../../assets/map-point-svgrepo2.svg"
 import money from "../../../assets/money.svg"
-const express = require("express");
-const req = require("express/lib/request");
-const { google } = require("googleapis");
 
-async function getAuthSheets() {
-    const auth = new google.auth.GoogleAuth({
-        keyFile: "credentials.json",
-        scopes: "https://www.googleapis.com/auth/spreadsheets",
-    });
+function ResumoPedido({ pedido, fechar }) {
 
-    const client = await auth.getClient();
-
-    const googleSheets = google.sheets({
-        version: "v4",
-        auth: client,
-    });
-
-    const spreadsheetId = "1i82O3tZOBA5_4hV23Dgu6nQaQUR6c5t1zt0mZtupKV4";
-
-    return {
-        auth,
-        client,
-        googleSheets,
-        spreadsheetId,
+    const handleCloseModal = () => {
+        fechar();
     };
-}
 
-const app = express();
-app.use(express.json());
+    const handleModalClick = (event) => {
+        if (event.target === event.currentTarget) {
+            fechar();
+        }
+    };
 
-function ResumoPedido({ pedido }) {
+    const carrinho = pedido.carrinho
+    function calcularValorTotal(pedido) {
+        // Verifica se o pedido está definido e se possui a propriedade 'carrinho'
+        if (!pedido || !pedido.carrinho || !Array.isArray(pedido.carrinho)) {
+            return 0; // Retorna 0 se o pedido estiver vazio ou não tiver um carrinho válido
+        }
 
+        // Inicializa o valor total como 0
+        let valorTotal = 0;
+
+        // Itera sobre cada item no carrinho e adiciona o preço multiplicado pela quantidade ao valor total
+        pedido.carrinho.forEach(item => {
+            const precoItem = parseFloat(item.preco.replace(',', '.')); // Converte o preço para um número float
+            valorTotal += precoItem * item.quantidade; // Multiplica o preço pelo quantidade e adiciona ao valor total
+        });
+
+        // Retorna o valor total formatado com duas casas decimais
+        return valorTotal += pedido.entrega.taxa;
+    }
+
+    const valorTotal = calcularValorTotal(pedido).toFixed(2).replace('.', ',');
+    const observacaoFormatada = "item.observacao ? ` (${item.observacao})` : ''";
     const monospace = "```"
     const whatsapp = "55" + pedido.telefone;
-    const mensagemPedido =
 
-`Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
+    function renderizaFormaPagamentoEmoji(formaPagamento) {
+        switch (formaPagamento) {
+            case 'Credito':
+                return '💳';
+            case 'Débito':
+                return '💳';
+            case 'Dinheiro':
+                return '💵';
+            default:
+                return '';
+        }
+    }
+    const formaPagamentoEmoji = renderizaFormaPagamentoEmoji(pedido.pagamento.forma);
+
+    const mensagem = `
+Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
 
 *Itens:*
 ${pedido.carrinho.map(item => `
-➡ ${item.quantidade}x ${monospace}${item.nome}${monospace} ${item.observacao ? item.observacao : ''}
-${monospace}    R$ ${item.preco}${monospace}
+➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}${observacaoFormatada}
+${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace}
 `).join('')}
-💸 Forma de pagamento - ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco})` : ''}
+${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco})` : ''}
 
-🛵 ${pedido.entrega.forma} (taxa de: R$ ${pedido.entrega.taxa})
+🛵 ${pedido.entrega.forma} (taxa de: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
 
-Total: *R$ ${pedido.valorTotal}*
+Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.',',')}*
 
-Obrigado pela preferência, se precisar de algo é só chamar! 😉
-`;
+Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    console.log(mensagemPedido);
-
-    console.log(pedido)
-
-    const calcularTotal = () => {
-        const total = pedido.carrinho.reduce((acc, item) => {
-            return acc + parseFloat(item.preco.replace(',', '.')) * item.quantidade;
-        }, 0);
-
-        return total.toFixed(2);
-    };
-
-    async function getAuthSheets() {
-        const auth = new google.auth.GoogleAuth({
-            keyFile: "credentials.json",
-            scopes: "https://www.googleapis.com/auth/spreadsheets",
-        });
-
-        const client = await auth.getClient();
-
-        const googleSheets = google.sheets({
-            version: "v4",
-            auth: client,
-        });
-
-        const spreadsheetId = "1i82O3tZOBA5_4hV23Dgu6nQaQUR6c5t1zt0mZtupKV4";
-
-        return {
-            auth,
-            client,
-            googleSheets,
-            spreadsheetId,
-        };
-    }
+    console.log(mensagem)
 
     const finalizarPedido = async () => {
         const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";
@@ -104,32 +87,17 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉
                 body: JSON.stringify({
                     instance_id: "MSBDVMULNZ213LNJ0GWCAKA3",
                     instance_token: "a2f897b4-651b-47d0-8a6b-c8cc9f4c0cd7",
-                    message: [mensagemPedido],
+                    message: [mensagem],
                     phone: whatsapp
                 })
             });
 
-            app.post("/addRow", async (req, res) => {
-                const { googleSheets, auth, spreadsheetId } = await getAuthSheets();
-
-                const row = await googleSheets.spreadsheets.values.append({
-                    auth,
-                    spreadsheetId,
-                    range: "Página1",
-                    valueInputOption: "USER_ENTERED",
-                    resource: {
-                        pedido,
-                    },
-                });
-
-                res.send(row.data);
-            });
 
         } catch (error) {
             console.error("Erro ao enviar a mensagem:", error);
         }
 
-        console.log(pedido)
+        // console.log(pedido)
 
         // sessionStorage.removeItem('cesta');
         // window.location.href = '/';
@@ -138,7 +106,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉
 
     return (
         <>
-            <div className={style.modal_overlay}>
+            <div className={style.modal_overlay} onClick={handleModalClick} >
                 <div className={style.modal}>
                     <h1>Resumo do Pedido:</h1>
                     <div className={style.container_info}>
@@ -189,12 +157,12 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉
                         <div className={style.container_item}>
                             <div className={style.item}>
                                 <span>Taxa de entrega</span>
-                                <span>R$ 0,00</span>
+                                <span>R$ {pedido.entrega.taxa.toFixed(2).replace('.', ',')}</span>
                             </div>
                         </div>
                         <div className={style.total}>
                             <h2>Total</h2>
-                            <h2>R$ {calcularTotal().replace('.', ',')}</h2>
+                            <h2>R$ {valorTotal}</h2>
                         </div>
                     </div>
                     <button className={style.botao} onClick={finalizarPedido}>Finalizar Pedido</button>

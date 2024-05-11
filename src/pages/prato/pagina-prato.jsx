@@ -8,7 +8,6 @@ import 'slick-carousel/slick/slick-theme.css';
 import api from '../../api/api';
 import voltar from '../../assets/back.svg';
 import { useNavigate } from 'react-router-dom';
-// import { CestaContext } from '../../component/CestaContext';
 
 function PaginaPrato() {
     const navigate = useNavigate();
@@ -16,12 +15,6 @@ function PaginaPrato() {
     const [prato, setPrato] = useState(null);
     const [quantidade, setQuantidade] = useState(1);
     const [observacao, setObservacao] = useState('');
-    // const { cesta, adicionarPrato } = useContext(CestaContext)
-
-    // useEffect(() => {
-    //     console.log(cesta)
-    //     buscarPrato();
-    // }, [id, cesta]);
     
     useEffect(() => {
         buscarPrato();
@@ -84,8 +77,6 @@ function PaginaPrato() {
 
         sessionStorage.setItem('cesta', JSON.stringify(cestaAtual));
     };
-
-
 
     if (!prato) {
         return (

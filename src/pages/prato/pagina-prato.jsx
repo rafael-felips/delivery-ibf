@@ -35,8 +35,6 @@ function PaginaPrato() {
         return texto.replace(/\./g, ',');
     }
 
-    const precoFormatado = prato ? substituirPontoPorVirgula(prato.preco) : '0,00';
-
     const settings = {
         dots: true,
         infinite: true,
@@ -139,7 +137,7 @@ function PaginaPrato() {
                     </div>
                     <div className={style.containter_serve_preco}>
                         <span>Serve <b>{prato.serve}</b> pessoas</span>
-                        <b>R$ {precoFormatado}</b>
+                        <b>R$ {prato.preco.toFixed(2).replace('.',',')}</b>
                     </div>
                 </div>
                 <div className={style.container_quantidade}>

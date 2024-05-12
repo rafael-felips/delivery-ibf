@@ -18,21 +18,17 @@ function ResumoPedido({ pedido, fechar }) {
 
     const carrinho = pedido.carrinho
     function calcularValorTotal(pedido) {
-        // Verifica se o pedido está definido e se possui a propriedade 'carrinho'
         if (!pedido || !pedido.carrinho || !Array.isArray(pedido.carrinho)) {
-            return 0; // Retorna 0 se o pedido estiver vazio ou não tiver um carrinho válido
+            return 0;
         }
 
-        // Inicializa o valor total como 0
         let valorTotal = 0;
 
-        // Itera sobre cada item no carrinho e adiciona o preço multiplicado pela quantidade ao valor total
         pedido.carrinho.forEach(item => {
-            const precoItem = parseFloat(item.preco.replace(',', '.')); // Converte o preço para um número float
-            valorTotal += precoItem * item.quantidade; // Multiplica o preço pelo quantidade e adiciona ao valor total
+            const precoItem = parseFloat(item.preco);
+            valorTotal += precoItem * item.quantidade;
         });
 
-        // Retorna o valor total formatado com duas casas decimais
         return valorTotal += pedido.entrega.taxa;
     }
 
@@ -60,15 +56,15 @@ Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
 
 *Itens:*
 ${pedido.carrinho.map(item => `
-➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}${observacaoFormatada}
-${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace}
+➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
+${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
 `).join('')}
 ${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco})` : ''}
 
 🛵 ${pedido.entrega.forma} (taxa de: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
 
-Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.',',')}*
+Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
@@ -99,8 +95,8 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
         // console.log(pedido)
 
-        // sessionStorage.removeItem('cesta');
-        // window.location.href = '/';
+        sessionStorage.removeItem('cesta');
+        window.location.href = '/';
     };
 
 
@@ -150,7 +146,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                                     <span>
                                         <b>{item.quantidade}×</b> {item.nome}
                                     </span>
-                                    <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span>
+                                    <span>R$ {(parseFloat(item.preco) * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 </div>
                             </div>
                         ))}

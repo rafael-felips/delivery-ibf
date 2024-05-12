@@ -74,7 +74,7 @@ function Pedido() {
         if (cesta) {
             total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
         } else if (!cesta || cesta === 0) {
-            window.location.href = '/';
+            // window.location.href = '/';
         }
 
         setCarrinho(cesta);
@@ -274,7 +274,8 @@ function Pedido() {
                                 <span>
                                     <b>{item.quantidade}×</b> {item.nome}
                                 </span>
-                                <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span>
+                                <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.',',')}</span>
+                                {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
                             <FaEdit className={style.editar} />
                         </div>

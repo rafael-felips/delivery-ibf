@@ -3,12 +3,6 @@ import style from './prato.module.css';
 
 function Prato({ id, nome, resumo, preco, imagem }) {
 
-    function substituirPontoPorVirgula(texto) {
-        return texto.replace(/\./g, ',');
-    }
-
-    const precoFormatado = substituirPontoPorVirgula(preco);
-
     return (
         <>
             <div onClick={() => window.location.href = `/cardapio/${id}`} className={style.prato}>
@@ -16,7 +10,7 @@ function Prato({ id, nome, resumo, preco, imagem }) {
                 <div className={style.container_texto}>
                     <h3>{nome}</h3>
                     <span>{resumo}</span>
-                    <span className={style.preco}>R$ {precoFormatado}</span>
+                    <span className={style.preco}>R$ {preco.toFixed(2).replace('.',',')}</span>
                 </div>
             </div>
         </>

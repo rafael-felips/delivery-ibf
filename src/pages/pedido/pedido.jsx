@@ -10,6 +10,7 @@ import Dinheiro from '../../component/modal/dinheiro/dinheiro';
 import Pix from '../../component/modal/pix/pix';
 import { buscarCep } from '../../api/apicep';
 import ResumoPedido from '../../component/modal/resumo-pedido/resumo-pedido';
+import EditarItem from '../../component/modal/editar-item/editar-item';
 
 function Pedido() {
     const [formaEntrega, setFormaEntrega] = useState('');
@@ -274,7 +275,7 @@ function Pedido() {
                                 <span>
                                     <b>{item.quantidade}×</b> {item.nome}
                                 </span>
-                                <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.',',')}</span>
+                                <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
                             <FaEdit className={style.editar} />
@@ -385,6 +386,7 @@ function Pedido() {
             {modalDinheiro && <Dinheiro onClose={handleDinheiroClose} onConfirmar={troco => handleConfirmarDinheiro(troco)} />}
             {modalResumo && <ResumoPedido pedido={pedido} fechar={handleFecharResumo} />}
             <ToastContainer />
+            <EditarItem />
         </>
     );
 }

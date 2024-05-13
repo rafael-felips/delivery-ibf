@@ -22,6 +22,7 @@ function Pedido() {
     const [modalDinheiro, setModalDinheiro] = useState(false);
     const [modalPix, setModalPix] = useState(false);
     const [modalResumo, setModalResumo] = useState(false);
+    const [modalEditarItem, setModalEditarItem] = useState(false);
 
     const [pixAtivo, setPixAtivo] = useState(false);
     const [dinheiroAtivo, setDinheiroAtivo] = useState(false);
@@ -171,10 +172,17 @@ function Pedido() {
         console.log(troco)
     };
 
-
     const handleDinheiroClose = () => {
         setModalDinheiro(false);
     };
+
+    const handleEditarItemOpen = () => {
+        setModalEditarItem(true)
+    }
+
+    const handleEditarItemClose = () => {
+        setModalEditarItem(false)
+    }
 
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';
@@ -278,7 +286,7 @@ function Pedido() {
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
-                            <FaEdit className={style.editar} />
+                            <FaEdit className={style.editar} onClick={handleEditarItemOpen}/>
                         </div>
                     ))}
                     <div className={style.container_item}>
@@ -385,8 +393,9 @@ function Pedido() {
             {modalPix && <Pix onClose={handlePixClose} onConfirmar={handleConfirmarPix} />}
             {modalDinheiro && <Dinheiro onClose={handleDinheiroClose} onConfirmar={troco => handleConfirmarDinheiro(troco)} />}
             {modalResumo && <ResumoPedido pedido={pedido} fechar={handleFecharResumo} />}
+            {modalEditarItem && <EditarItem onClose={handleEditarItemClose} />}
             <ToastContainer />
-            <EditarItem />
+            {/* <EditarItem /> */}
         </>
     );
 }

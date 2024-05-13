@@ -14,11 +14,17 @@ function EditarItem() {
                         <button>+</button>
                     </div>
                 </div>
-                    <span>Observação</span>
-                    <textarea name="" id=""></textarea>
+                <div className={style.container_observacao}>
+                    <h3>Observação:</h3>
+                    <textarea name="" cols="30" rows="3" id=""></textarea>
+                </div>
+                <div className={style.total}>
+                    <h3>Total</h3>
+                    <span>R$ 38,00</span>
+                </div>
                 <div className={style.container_botoes}>
-                    <button>Cancelar</button>
-                    <button>Confirmar</button>
+                    <button style={{ backgroundColor: '#FF6767' }}>Cancelar</button>
+                    <button style={{ backgroundColor: '#3BB03F' }}>Confirmar</button>
                 </div>
             </div>
         </div>

@@ -31,7 +31,7 @@ function Pix({ onClose, onConfirmar }) {
                     ref={textRef}
                 />
                 <div className={style.container_botoes}>
-                <button style={{ backgroundColor: '#FF6767' }} onClick={onClose}>Cancelar</button>
+                    <button style={{ backgroundColor: '#FF6767' }} onClick={onClose}>Cancelar</button>
                     <button style={{ backgroundColor: '#85DC40' }} onClick={onConfirmar}>Confirmar</button>
                 </div>
             </div>

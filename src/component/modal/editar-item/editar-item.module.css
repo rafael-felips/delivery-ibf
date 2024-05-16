@@ -70,6 +70,8 @@
 .container_observacao>textarea{
     border: solid 1px #0077B6;
     border-radius: 5px;
+    resize: 'none';
+    overflow: 'auto';
 }
 
 .total{

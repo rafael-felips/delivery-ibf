@@ -31,6 +31,9 @@ function Pedido() {
 
     const [carrinho, setCarrinho] = useState([]);
 
+    const [itemSelecionado, setItemSelecionado] = useState(null);
+    const [itemAtualizado, setItemAtualizado] = useState(null);
+
     const [taxaEntrega, setTaxaEntrega] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
     const [troco, setTroco] = useState(0)
@@ -70,17 +73,15 @@ function Pedido() {
 
     useEffect(() => {
         const cesta = JSON.parse(sessionStorage.getItem('cesta'));
-        // console.log(cesta)
 
-        let total = 0;
         if (cesta) {
-            total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
-        } else if (!cesta || cesta === 0) {
-            // window.location.href = '/';
+            let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+            setCarrinho(cesta);
+            setValorTotal(total);
+        } else {
+            window.location.href = '/';
         }
 
-        setCarrinho(cesta);
-        setValorTotal(total);
     }, []);
 
     const handleFormaEntrega = (forma) => {
@@ -92,10 +93,19 @@ function Pedido() {
         if (entregaAtiva) {
             setEntregaAtiva(false);
         } else {
+
             setEntregaAtiva(true);
             setRetiradaAtiva(false);
             handleFormaEntrega("Entrega")
             setTaxaEntrega(2)
+
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         }
     };
 
@@ -176,13 +186,28 @@ function Pedido() {
         setModalDinheiro(false);
     };
 
-    const handleEditarItemOpen = () => {
+    const handleEditarItemOpen = (item) => {
+        setItemSelecionado(item)
         setModalEditarItem(true)
     }
 
     const handleEditarItemClose = () => {
         setModalEditarItem(false)
+        setItemSelecionado(null)
     }
+
+    const atualizarItem = (itemAtualizado) => {
+        const carrinhoAtualizado = [...carrinho];
+        const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
+
+        if (indice >= 0) {
+            carrinhoAtualizado[indice] = itemAtualizado;
+        }
+
+        setCarrinho(carrinhoAtualizado);
+        sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
+        handleEditarItemClose();
+    };
 
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';
@@ -217,7 +242,6 @@ function Pedido() {
     const handleFecharResumo = () => {
         setModalResumo(false);
     }
-
 
     const handleConfirmarPedido = () => {
         const dataHora = new Date();
@@ -266,8 +290,6 @@ function Pedido() {
     };
 
 
-
-
     return (
         <>
             <div className={style.body}>
@@ -286,9 +308,14 @@ function Pedido() {
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
-                            <FaEdit className={style.editar} onClick={handleEditarItemOpen}/>
+                            <FaEdit className={style.editar} onClick={() => handleEditarItemOpen(item)} />
                         </div>
                     ))}
+                    {
+                        modalEditarItem && (
+                            <EditarItem item={itemSelecionado} onSave={atualizarItem} onClose={handleEditarItemClose} />
+                        )
+                    }
                     <div className={style.container_item}>
                         <div className={style.item}>
                             <span>Taxa de entrega</span>
@@ -393,9 +420,7 @@ function Pedido() {
             {modalPix && <Pix onClose={handlePixClose} onConfirmar={handleConfirmarPix} />}
             {modalDinheiro && <Dinheiro onClose={handleDinheiroClose} onConfirmar={troco => handleConfirmarDinheiro(troco)} />}
             {modalResumo && <ResumoPedido pedido={pedido} fechar={handleFecharResumo} />}
-            {modalEditarItem && <EditarItem onClose={handleEditarItemClose} />}
             <ToastContainer />
-            {/* <EditarItem /> */}
         </>
     );
 }

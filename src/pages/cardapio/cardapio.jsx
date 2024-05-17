@@ -115,6 +115,7 @@ function Cardapio() {
                     paginaAtual={"cardapio"} valorTotal={valorTotal} />
             </div>
             {modalAberto && <Informacoes onClose={handleCloseModal} />}
+            {/* <ToastContainer /> */}
         </>
     );
 };

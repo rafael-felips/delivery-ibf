@@ -8,6 +8,7 @@ import 'slick-carousel/slick/slick-theme.css';
 import api from '../../api/api';
 import voltar from '../../assets/back.svg';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
 
 function PaginaPrato() {
     const navigate = useNavigate();
@@ -15,7 +16,7 @@ function PaginaPrato() {
     const [prato, setPrato] = useState(null);
     const [quantidade, setQuantidade] = useState(1);
     const [observacao, setObservacao] = useState('');
-    
+
     useEffect(() => {
         buscarPrato();
     }, [id]);
@@ -31,10 +32,6 @@ function PaginaPrato() {
             });
     }
 
-    function substituirPontoPorVirgula(texto) {
-        return texto.replace(/\./g, ',');
-    }
-
     const settings = {
         dots: true,
         infinite: true,
@@ -46,22 +43,26 @@ function PaginaPrato() {
     const aumentarQuantidade = () => {
         if (quantidade < 9) {
             setQuantidade(quantidade + 1);
+        } else {
+            toast.warn('O maximo é 9')
         }
     };
 
     const diminuirQuantidade = () => {
         if (quantidade > 1) {
             setQuantidade(quantidade - 1);
+        } else {
+            toast.error('O minimo é 1')
         }
     };
-    
+
     const adicionarPratoNaCesta = () => {
         const itemCesta = {
             id: prato.id,
             nome: prato.nome,
             quantidade: quantidade,
             preco: prato.preco,
-            observacao: observacao, // Incluindo a observação
+            observacao: observacao,
         };
         const cestaAtual = JSON.parse(sessionStorage.getItem('cesta')) || [];
         const pratoExistenteIndex = cestaAtual.findIndex((item) => item.id === itemCesta.id);
@@ -113,49 +114,50 @@ function PaginaPrato() {
     }
 
     return (
-        <><div className={style.body}>
-            <div className={style.imagens}>
-                <img src={voltar} onClick={() => navigate(-1)} className={style.voltar} />
-                <Slider {...settings}>
-                    <div className={style.imagem}>
-                        <img src={prato.imagem1} />
+        <>
+            <div className={style.body}>
+                <div className={style.imagens}>
+                    <img src={voltar} onClick={() => navigate(-1)} className={style.voltar} />
+                    <Slider {...settings}>
+                        <div className={style.imagem}>
+                            <img src={prato.imagem1} />
+                        </div>
+                        <div>
+                            <img src={prato.imagem2} className={style.imagem} />
+                        </div>
+                        <div>
+                            <img src={prato.imagem3} className={style.imagem} />
+                        </div>
+                    </Slider>
+                    <SliderDots />
+                </div>
+                <div className={style.container}>
+                    <div className={style.container_infos}>
+                        <div className={style.container_nome_desc}>
+                            <h1>{prato.nome}</h1>
+                            <p>{prato.resumo}</p>
+                        </div>
+                        <div className={style.containter_serve_preco}>
+                            <span>Serve <b>{prato.serve}</b> pessoas</span>
+                            <b>R$ {prato.preco.toFixed(2).replace('.', ',')}</b>
+                        </div>
                     </div>
-                    <div>
-                        <img src={prato.imagem2} className={style.imagem} />
+                    <div className={style.container_quantidade}>
+                        <b>Quantidade</b>
+                        <div className={style.quantidade}>
+                            <button onClick={diminuirQuantidade}>-</button>
+                            <span>{quantidade}</span>
+                            <button onClick={aumentarQuantidade}>+</button>
+                        </div>
                     </div>
-                    <div>
-                        <img src={prato.imagem3} className={style.imagem} />
+                    <div className={style.container_observacoes}>
+                        <b>Observações</b>
+                        <textarea id="observacao" cols="30" rows="4" value={observacao} onChange={(e) => setObservacao(e.target.value)}></textarea>
                     </div>
-                </Slider>
-                <SliderDots />
+                    <BotaoPrincipal onClick={() => window.location.href = '/cardapio'} adicionarPrato={adicionarPratoNaCesta} preco={prato.preco * quantidade} paginaAtual="prato" />
+                </div>
             </div>
-            <div className={style.container}>
-                <div className={style.container_infos}>
-                    <div className={style.container_nome_desc}>
-                        <h1>{prato.nome}</h1>
-                        <p>{prato.resumo}</p>
-                    </div>
-                    <div className={style.containter_serve_preco}>
-                        <span>Serve <b>{prato.serve}</b> pessoas</span>
-                        <b>R$ {prato.preco.toFixed(2).replace('.',',')}</b>
-                    </div>
-                </div>
-                <div className={style.container_quantidade}>
-                    <b>Quantidade</b>
-                    <div className={style.quantidade}>
-                        <button onClick={diminuirQuantidade}>-</button>
-                        <span>{quantidade}</span>
-                        <button onClick={aumentarQuantidade}>+</button>
-                    </div>
-                </div>
-                <div className={style.container_observacoes}>
-                    <b>Observações</b>
-                    {/* <textarea id="" cols="30" rows="4"></textarea> */}
-                    <textarea id="observacao" cols="30" rows="4" value={observacao} onChange={(e) => setObservacao(e.target.value)}></textarea>
-                </div>
-                <BotaoPrincipal onClick={() => window.location.href = '/cardapio'} adicionarPrato={adicionarPratoNaCesta} preco={prato.preco * quantidade} paginaAtual="prato" />
-            </div>
-        </div>
+            <ToastContainer />
         </>
     );
 }

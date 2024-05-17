@@ -94,6 +94,13 @@ function Pedido() {
             setRetiradaAtiva(false);
             handleFormaEntrega("Entrega")
             setTaxaEntrega(2)
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         }
     };
 
@@ -209,19 +216,18 @@ function Pedido() {
         setModalResumo(false);
     }
 
-
     const handleConfirmarPedido = () => {
         const dataHora = new Date();
-        const clienteNome = cliente.nome;
+        const clienteNome = cliente.nome.trim();
         const clienteTelefone = cliente.telefone;
         const carrinhoAtual = carrinho;
         const enderecoEntrega = {
             taxa: taxaEntrega,
             forma: formaEntrega,
-            rua: endereco.rua,
-            numero: endereco.numero,
-            complemento: endereco.complemento,
-            bairro: endereco.bairro,
+            rua: endereco.rua.trim(),
+            numero: endereco.numero.trim(),
+            complemento: endereco.complemento.trim(),
+            bairro: endereco.bairro.trim(),
         };
 
         console.log(carrinhoAtual)
@@ -256,9 +262,6 @@ function Pedido() {
         }
     };
 
-
-
-
     return (
         <>
             <div className={style.body}>
@@ -274,7 +277,7 @@ function Pedido() {
                                 <span>
                                     <b>{item.quantidade}×</b> {item.nome}
                                 </span>
-                                <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.',',')}</span>
+                                <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
                             <FaEdit className={style.editar} />

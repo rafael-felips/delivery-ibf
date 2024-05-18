@@ -33,7 +33,6 @@ function ResumoPedido({ pedido, fechar }) {
     }
 
     const valorTotal = calcularValorTotal(pedido).toFixed(2).replace('.', ',');
-    const observacaoFormatada = "item.observacao ? ` (${item.observacao})` : ''";
     const monospace = "```"
     const whatsapp = "55" + pedido.telefone;
 
@@ -45,23 +44,24 @@ function ResumoPedido({ pedido, fechar }) {
                 return '💳';
             case 'Dinheiro':
                 return '💵';
+            case 'Pix':
+                return '📱💵';
             default:
                 return '';
         }
     }
     const formaPagamentoEmoji = renderizaFormaPagamentoEmoji(pedido.pagamento.forma);
 
-    const mensagem = `
-Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
+    const mensagem = `Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
 
 *Itens:*
 ${pedido.carrinho.map(item => `
 ➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
 ${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
 `).join('')}
-${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco})` : ''}
+${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco.toFixed(2).replace('.', ',')})` : ''}
 
-🛵 ${pedido.entrega.forma} (taxa de: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
+🛵 ${pedido.entrega.forma} (taxa de entrega: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
 
 Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
@@ -93,12 +93,9 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
             console.error("Erro ao enviar a mensagem:", error);
         }
 
-        // console.log(pedido)
-
         sessionStorage.removeItem('cesta');
         window.location.href = '/';
     };
-
 
     return (
         <>

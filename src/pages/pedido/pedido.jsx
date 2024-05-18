@@ -245,16 +245,16 @@ function Pedido() {
 
     const handleConfirmarPedido = () => {
         const dataHora = new Date();
-        const clienteNome = cliente.nome;
+        const clienteNome = cliente.nome.trim();
         const clienteTelefone = cliente.telefone;
         const carrinhoAtual = carrinho;
         const enderecoEntrega = {
             taxa: taxaEntrega,
             forma: formaEntrega,
-            rua: endereco.rua,
-            numero: endereco.numero,
-            complemento: endereco.complemento,
-            bairro: endereco.bairro,
+            rua: endereco.rua.trim(),
+            numero: endereco.numero.trim(),
+            complemento: endereco.complemento.trim(),
+            bairro: endereco.bairro.trim(),
         };
 
         console.log(carrinhoAtual)
@@ -288,7 +288,6 @@ function Pedido() {
             toast.error('Número de telefone inválido', { autoClose: 3000 });
         }
     };
-
 
     return (
         <>

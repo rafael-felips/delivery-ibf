@@ -2,6 +2,7 @@ import React from 'react';
 import style from './botaoPrincipal.module.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
+import { toast, ToastContainer } from 'react-toastify';
 
 function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalCompra }) {
   const textoBotao = paginaAtual === 'cardapio' ? 'Meu Pedido' : 'Adicionar ao Pedido';
@@ -38,7 +39,8 @@ function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalC
       if (cesta && cesta.length > 0) {
         window.location.href = '/pedido'; // Redirecionar para a página de pedido
       } else {
-        alert('A cesta está vazia. Adicione itens antes de prosseguir para o pedido.');
+        // alert('A cesta está vazia. Adicione itens antes de prosseguir para o pedido.');
+        toast.error('A pedido está vazio.', { autoClose: 3000 });
       }
     } else if (paginaAtual != 'cardapio') {
       // alert('entrou no else if')
@@ -48,13 +50,16 @@ function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalC
   };
 
   return (
-    <button className={style.botao} onClick={handleClick}>
-      <div className={style.icone}>
-        <FontAwesomeIcon icon={faShoppingCart} />
-      </div>
-      <div className={style.texto}>{textoBotao}</div>
-      <div className={style.preco}>R$ {precoFormatado}</div>
-    </button>
+    <>
+      <button className={style.botao} onClick={handleClick}>
+        <div className={style.icone}>
+          <FontAwesomeIcon icon={faShoppingCart} />
+        </div>
+        <div className={style.texto}>{textoBotao}</div>
+        <div className={style.preco}>R$ {precoFormatado}</div>
+      </button>
+      <ToastContainer />
+    </>
   );
 }
 

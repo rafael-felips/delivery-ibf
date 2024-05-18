@@ -10,6 +10,7 @@ import Dinheiro from '../../component/modal/dinheiro/dinheiro';
 import Pix from '../../component/modal/pix/pix';
 import { buscarCep } from '../../api/apicep';
 import ResumoPedido from '../../component/modal/resumo-pedido/resumo-pedido';
+import EditarItem from '../../component/modal/editar-item/editar-item';
 
 function Pedido() {
     const [formaEntrega, setFormaEntrega] = useState('');
@@ -21,6 +22,7 @@ function Pedido() {
     const [modalDinheiro, setModalDinheiro] = useState(false);
     const [modalPix, setModalPix] = useState(false);
     const [modalResumo, setModalResumo] = useState(false);
+    const [modalEditarItem, setModalEditarItem] = useState(false);
 
     const [pixAtivo, setPixAtivo] = useState(false);
     const [dinheiroAtivo, setDinheiroAtivo] = useState(false);
@@ -28,6 +30,9 @@ function Pedido() {
     const [creditoAtivo, setCreditoAtivo] = useState(false);
 
     const [carrinho, setCarrinho] = useState([]);
+
+    const [itemSelecionado, setItemSelecionado] = useState(null);
+    const [itemAtualizado, setItemAtualizado] = useState(null);
 
     const [taxaEntrega, setTaxaEntrega] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
@@ -68,17 +73,15 @@ function Pedido() {
 
     useEffect(() => {
         const cesta = JSON.parse(sessionStorage.getItem('cesta'));
-        // console.log(cesta)
 
-        let total = 0;
         if (cesta) {
-            total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
-        } else if (!cesta || cesta === 0) {
-            // window.location.href = '/';
+            let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+            setCarrinho(cesta);
+            setValorTotal(total);
+        } else {
+            window.location.href = '/';
         }
 
-        setCarrinho(cesta);
-        setValorTotal(total);
     }, []);
 
     const handleFormaEntrega = (forma) => {
@@ -90,10 +93,12 @@ function Pedido() {
         if (entregaAtiva) {
             setEntregaAtiva(false);
         } else {
+
             setEntregaAtiva(true);
             setRetiradaAtiva(false);
             handleFormaEntrega("Entrega")
             setTaxaEntrega(2)
+
             setEndereco({
                 cep: '',
                 rua: '',
@@ -177,9 +182,31 @@ function Pedido() {
         console.log(troco)
     };
 
-
     const handleDinheiroClose = () => {
         setModalDinheiro(false);
+    };
+
+    const handleEditarItemOpen = (item) => {
+        setItemSelecionado(item)
+        setModalEditarItem(true)
+    }
+
+    const handleEditarItemClose = () => {
+        setModalEditarItem(false)
+        setItemSelecionado(null)
+    }
+
+    const atualizarItem = (itemAtualizado) => {
+        const carrinhoAtualizado = [...carrinho];
+        const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
+
+        if (indice >= 0) {
+            carrinhoAtualizado[indice] = itemAtualizado;
+        }
+
+        setCarrinho(carrinhoAtualizado);
+        sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
+        handleEditarItemClose();
     };
 
     const handleCepChange = async (event) => {
@@ -280,9 +307,14 @@ function Pedido() {
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
-                            <FaEdit className={style.editar} />
+                            <FaEdit className={style.editar} onClick={() => handleEditarItemOpen(item)} />
                         </div>
                     ))}
+                    {
+                        modalEditarItem && (
+                            <EditarItem item={itemSelecionado} onSave={atualizarItem} onClose={handleEditarItemClose} />
+                        )
+                    }
                     <div className={style.container_item}>
                         <div className={style.item}>
                             <span>Taxa de entrega</span>

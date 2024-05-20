@@ -68,7 +68,7 @@ Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    console.log(mensagem)
+    // console.log(mensagem)
 
     const finalizarPedido = async () => {
         const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";

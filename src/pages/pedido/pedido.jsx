@@ -89,7 +89,6 @@ function Pedido() {
         setFormaEntrega(forma);
     };
 
-
     const handleEntregaClick = () => {
         if (entregaAtiva) {
             setEntregaAtiva(false);
@@ -279,7 +278,7 @@ function Pedido() {
     };
 
     const handleNomeBlur = (event) => {
-        const nome = event.target.value.trim();
+        const nome = event.target.value;
         if (nome.length < 3) {
             toast.error('O nome deve ter pelo menos 3 letras.', { autoClose: 3000 });
         }

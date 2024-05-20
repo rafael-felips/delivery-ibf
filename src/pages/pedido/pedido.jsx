@@ -2,17 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import style from './pedido.module.css';
-import { FaEdit } from 'react-icons/fa';
+import voltar from '../../assets/back black.svg'
 import InputMask from 'react-input-mask';
 import moto from '../../assets/moto.svg';
+import editar from '../../assets/edit.svg';
 import retirada from '../../assets/retirada.svg';
 import Dinheiro from '../../component/modal/dinheiro/dinheiro';
 import Pix from '../../component/modal/pix/pix';
 import { buscarCep } from '../../api/apicep';
 import ResumoPedido from '../../component/modal/resumo-pedido/resumo-pedido';
 import EditarItem from '../../component/modal/editar-item/editar-item';
+import { useNavigate } from 'react-router-dom';
 
 function Pedido() {
+    const navigate = useNavigate();
     const [formaEntrega, setFormaEntrega] = useState('');
     const [formaPagamento, setFormaPagamento] = useState('');
 
@@ -32,7 +35,6 @@ function Pedido() {
     const [carrinho, setCarrinho] = useState([]);
 
     const [itemSelecionado, setItemSelecionado] = useState(null);
-    const [itemAtualizado, setItemAtualizado] = useState(null);
 
     const [taxaEntrega, setTaxaEntrega] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
@@ -71,23 +73,9 @@ function Pedido() {
         }
     })
 
-    // useEffect(() => {
-    //     const cesta = JSON.parse(sessionStorage.getItem('cesta'));
-
-    //     if (cesta) {
-    //         let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
-    //         setCarrinho(cesta);
-    //         setValorTotal(total);
-    //     } else {
-    //         window.location.href = '/';
-    //     }
-    //     const total = carrinho.reduce((acc, item) => acc + (parseFloat(item.preco) * item.quantidade), 0);
-    //     setValorTotal(total);
-    // }, [carrinho]);
-
     useEffect(() => {
         const cesta = JSON.parse(sessionStorage.getItem('cesta'));
-    
+
         if (cesta) {
             let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
             setCarrinho(cesta);
@@ -95,9 +83,7 @@ function Pedido() {
         } else {
             window.location.href = '/';
         }
-    }, []); // Removemos o carrinho da lista de dependências para evitar o loop infinito
-    
-      
+    }, []);
 
     const handleFormaEntrega = (forma) => {
         setFormaEntrega(forma);
@@ -210,36 +196,22 @@ function Pedido() {
         setItemSelecionado(null)
     }
 
-    // const atualizarItem = (itemAtualizado) => {
-    //     const carrinhoAtualizado = [...carrinho];
-    //     const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
-
-    //     if (indice >= 0) {
-    //         carrinhoAtualizado[indice] = itemAtualizado;
-    //     }
-
-    //     setCarrinho(carrinhoAtualizado);// Atualiza o estado do carrinho
-    //     sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
-    //     handleEditarItemClose();
-    // };
-
     const atualizarItem = (itemAtualizado) => {
         const carrinhoAtualizado = [...carrinho];
         const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
-    
+
         if (indice >= 0) {
             carrinhoAtualizado[indice] = itemAtualizado;
         }
-    
-        // Calcula o novo valor total após a atualização do item
+
         const novoValorTotal = carrinhoAtualizado.reduce((acc, item) => acc + (parseFloat(item.preco) * item.quantidade), 0);
-    
-        setCarrinho(carrinhoAtualizado); // Atualiza o estado do carrinho
-        setValorTotal(novoValorTotal); // Atualiza o valor total
-    
+
+        setCarrinho(carrinhoAtualizado);
+        setValorTotal(novoValorTotal);
+
         sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
         handleEditarItemClose();
-    };    
+    };
 
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';
@@ -304,7 +276,6 @@ function Pedido() {
         })
 
         handleAbrirResumo();
-        // console.log(pedido)
     };
 
     const handleNomeBlur = (event) => {
@@ -324,6 +295,7 @@ function Pedido() {
     return (
         <>
             <div className={style.body}>
+                <img src={voltar} className={style.voltar} onClick={() => navigate('/cardapio')} />
                 <h1>Meu Pedido</h1>
                 <div className={style.container_itens}>
                     <div className={style.container_titulos}>
@@ -331,7 +303,7 @@ function Pedido() {
                         <b>Preço</b>
                     </div>
                     {carrinho.map((item, index) => (
-                        <div key={index} className={style.container_item}>
+                        <div key={index} className={style.container_item_map} onClick={() => handleEditarItemOpen(item)}>
                             <div className={style.item}>
                                 <span>
                                     <b>{item.quantidade}×</b> {item.nome}
@@ -339,7 +311,7 @@ function Pedido() {
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
                                 {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
-                            <FaEdit className={style.editar} onClick={() => handleEditarItemOpen(item)} />
+                            <img src={editar} className={style.editar} />
                         </div>
                     ))}
                     {
@@ -360,7 +332,7 @@ function Pedido() {
                 </div>
                 <div className={style.container_nome_telefone}>
                     <div className={style.campo}>
-                        <span>Nome *</span>
+                        <span>Nome</span>
                         <input
                             type="text"
                             placeholder="Como vamos te chamar"
@@ -371,7 +343,7 @@ function Pedido() {
                     </div>
 
                     <div className={style.campo}>
-                        <span>Telefone *</span>
+                        <span>Telefone</span>
                         <InputMask
                             mask="(99) 99999-9999"
                             placeholder="(00) 00000-0000"
@@ -396,7 +368,7 @@ function Pedido() {
                 <div className={`${style.container_endereco} ${entregaAtiva ? '' : style.hidden}`}>
                     <div className={style.linha1}>
                         <div className={style.input_cep}>
-                            <span>Nome da Rua *</span>
+                            <span>Nome da Rua</span>
                             <input type="text" value={endereco.rua} onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })} />
                         </div>
                     </div>
@@ -408,7 +380,7 @@ function Pedido() {
                     </div>
                     <div className={style.linha3}>
                         <div className={style.input_numero}>
-                            <span>Número *</span>
+                            <span>Número</span>
                             <input type="text" disabled={!entregaAtiva} onChange={(e) => setEndereco({ ...endereco, numero: e.target.value })} />
                         </div>
                         <div className={style.input_complemento}>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import style from './prato.module.css';
 import BotaoPrincipal from '../../component/botao-principal/botaoPrincipal';

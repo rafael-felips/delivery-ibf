@@ -50,7 +50,7 @@ function Dinheiro({ onClose, onConfirmar }) {
                 </div>
                 <div className={style.container_botoes}>
                     <button style={{ backgroundColor: '#FF6767' }} onClick={onClose}>Cancelar</button>
-                    <button style={{ backgroundColor: '#85DC40' }} onClick={confirmar}>Confirmar</button>
+                    <button style={{ backgroundColor: '#3BB03F' }} onClick={confirmar}>Confirmar</button>
                 </div>
             </div>
         </div>

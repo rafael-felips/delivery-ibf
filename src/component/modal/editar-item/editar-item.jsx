@@ -5,6 +5,7 @@ function EditarItem({ item, onClose, onSave }) {
     const [quantidade, setQuantidade] = useState(item.quantidade);
     const [observacao, setObservacao] = useState(item.observacao);
     const [preco, setPreco] = useState(item.preco)
+    // let [precoTotal, setPrecoTotal] = useState();
 
     const handleSave = () => {
         const itemAtualizado = {
@@ -16,19 +17,15 @@ function EditarItem({ item, onClose, onSave }) {
         onSave(itemAtualizado)
     }
 
-    console.log(preco)
-
     const aumentarQuantidade = () => {
         if (quantidade < 9) {
             setQuantidade(quantidade + 1);
-            setPreco(preco * quantidade)
         }
     };
 
     const diminuirQuantidade = () => {
         if (quantidade > 1) {
             setQuantidade(quantidade - 1);
-            setPreco(preco * quantidade)
         }
     };
 
@@ -50,7 +47,8 @@ function EditarItem({ item, onClose, onSave }) {
                 </div>
                 <div className={style.total}>
                     <h3>Total</h3>
-                    <span>R$ {(item.preco * quantidade).toFixed(2).replace('.', ',')}</span>
+                    <span>R$ {(preco * quantidade).toFixed(2).replace('.', ',')}</span>
+                    {/* <span>R$ {(precoTotal).toFixed(2).replace('.', ',')}</span> */}
                 </div>
                 <div className={style.container_botoes}>
                     <button onClick={onClose} style={{ backgroundColor: '#FF6767' }}>Cancelar</button>

@@ -207,6 +207,7 @@ function Pedido() {
         setCarrinho(carrinhoAtualizado);
         sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
         handleEditarItemClose();
+        console.log(carrinhoAtualizado)
     };
 
     const handleCepChange = async (event) => {

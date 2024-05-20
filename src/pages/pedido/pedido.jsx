@@ -71,9 +71,23 @@ function Pedido() {
         }
     })
 
+    // useEffect(() => {
+    //     const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+
+    //     if (cesta) {
+    //         let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+    //         setCarrinho(cesta);
+    //         setValorTotal(total);
+    //     } else {
+    //         window.location.href = '/';
+    //     }
+    //     const total = carrinho.reduce((acc, item) => acc + (parseFloat(item.preco) * item.quantidade), 0);
+    //     setValorTotal(total);
+    // }, [carrinho]);
+
     useEffect(() => {
         const cesta = JSON.parse(sessionStorage.getItem('cesta'));
-
+    
         if (cesta) {
             let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
             setCarrinho(cesta);
@@ -81,8 +95,9 @@ function Pedido() {
         } else {
             window.location.href = '/';
         }
-
-    }, []);
+    }, []); // Removemos o carrinho da lista de dependências para evitar o loop infinito
+    
+      
 
     const handleFormaEntrega = (forma) => {
         setFormaEntrega(forma);
@@ -126,7 +141,6 @@ function Pedido() {
             });
         }
     };
-
 
     const handleFormaPagamento = (forma) => {
         setFormaPagamento(forma);
@@ -196,19 +210,36 @@ function Pedido() {
         setItemSelecionado(null)
     }
 
+    // const atualizarItem = (itemAtualizado) => {
+    //     const carrinhoAtualizado = [...carrinho];
+    //     const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
+
+    //     if (indice >= 0) {
+    //         carrinhoAtualizado[indice] = itemAtualizado;
+    //     }
+
+    //     setCarrinho(carrinhoAtualizado);// Atualiza o estado do carrinho
+    //     sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
+    //     handleEditarItemClose();
+    // };
+
     const atualizarItem = (itemAtualizado) => {
         const carrinhoAtualizado = [...carrinho];
         const indice = carrinhoAtualizado.findIndex(item => item.id === itemAtualizado.id);
-
+    
         if (indice >= 0) {
             carrinhoAtualizado[indice] = itemAtualizado;
         }
-
-        setCarrinho(carrinhoAtualizado);
+    
+        // Calcula o novo valor total após a atualização do item
+        const novoValorTotal = carrinhoAtualizado.reduce((acc, item) => acc + (parseFloat(item.preco) * item.quantidade), 0);
+    
+        setCarrinho(carrinhoAtualizado); // Atualiza o estado do carrinho
+        setValorTotal(novoValorTotal); // Atualiza o valor total
+    
         sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
         handleEditarItemClose();
-        console.log(carrinhoAtualizado)
-    };
+    };    
 
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';

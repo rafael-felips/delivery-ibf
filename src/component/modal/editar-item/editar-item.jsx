@@ -17,8 +17,6 @@ function EditarItem({ item, onClose, onSave }) {
         onSave(itemAtualizado)
     }
 
-    console.log(item)
-
     const aumentarQuantidade = () => {
         if (quantidade < 9) {
             setQuantidade(quantidade + 1);

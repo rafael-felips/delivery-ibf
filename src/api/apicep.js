@@ -4,7 +4,7 @@ export const buscarCep = async (cep) => {
         const data = await response.json();
         return data;
     } catch (error) {
-        console.error('Erro ao buscar CEP:');
+        // console.error('Erro ao buscar CEP:');
         return null;
     }
 };

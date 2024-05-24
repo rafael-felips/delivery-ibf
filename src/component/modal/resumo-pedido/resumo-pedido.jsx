@@ -9,6 +9,7 @@ function ResumoPedido({ pedido, fechar }) {
     useEffect(() => {
         enviarDados()
         console.log(pedido)
+        console.log(mensagem)
     })
 
     const handleCloseModal = () => {
@@ -64,7 +65,7 @@ ${pedido.carrinho.map(item => `
 ➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
 ${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
 `).join('')}
-${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco.toFixed(2).replace('.', ',')})` : ''}
+${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')})` : ''}
 
 🛵 ${pedido.entrega.forma} (taxa de entrega: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
@@ -72,6 +73,7 @@ ${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (tr
 Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
+    // ${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco.toFixed(2).replace('.', ',')})` : ''}
 
     const finalizarPedido = async () => {
         const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";
@@ -101,11 +103,19 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
     };
 
     const enviarDados = () => {
+
+        const carrinhoFormatado = pedido.carrinho
+            .map(
+                (item) =>
+                    `${item.quantidade}x ${item.nome} - R$ ${item.preco.toFixed(2).replace('.', ',')}${item.observacao ? `, (${item.observacao})` : ""}`
+            ).join("\n")
+
         fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa('nhfmr45f:7r7fz6q3zxsy0vk1u3q6')
             },
             body: JSON.stringify({
                 data: [
@@ -114,19 +124,18 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         'Data': pedido.dataHora,
                         'Cliente': pedido.cliente,
                         'Telefone': pedido.telefone,
-                        'Carrinho': pedido.carrinho,
+                        'Carrinho': carrinhoFormatado,
                         'Taxa de Entrega': pedido.entrega.taxa,
                         'Forma de Entrega': pedido.entrega.forma,
                         'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero}, ${pedido.entrega.complemento}, - ${pedido.entrega.bairro}`,
                         'Forma de pagamento': pedido.pagamento.forma,
-                        'Troco': pedido.pagamento.troco
+                        'Troco': pedido.pagamento.troco,
+                        'Total': valorTotal
                     }
                 ]
             })
         })
             .then((response) => response.json())
-            .then((data) => console.log(data));
-
     };
 
     return (
@@ -160,10 +169,9 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         </div>
                         <span><b>Forma: </b>{pedido.pagamento.forma}</span>
                         {pedido.pagamento.troco > 0 && (
-                            <span><b>Troco: </b> {pedido.pagamento.troco}</span>
+                            <span><b>Troco: </b> R$ {parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')}</span>
                         )}
                     </div>
-
                     <div className={style.container_itens}>
                         <div className={style.itens_preco}>
                             <h2>Itens</h2>

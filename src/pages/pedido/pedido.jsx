@@ -247,7 +247,14 @@ function Pedido() {
     }
 
     const handleConfirmarPedido = () => {
-        const dataHora = new Date();
+        const dataAtual = new Date();
+        const dia = dataAtual.getDate().toString().padStart(2, '0');
+        const mes = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+        const ano = dataAtual.getFullYear();
+        const hora = dataAtual.getHours().toString().padStart(2, '0');
+        const minuto = dataAtual.getMinutes().toString().padStart(2, '0');
+
+        const dataHora = `${hora}:${minuto} - ${dia}/${mes}/${ano}`;
         const clienteNome = cliente.nome.trim();
         const clienteTelefone = cliente.telefone;
         const carrinhoAtual = carrinho;
@@ -256,7 +263,7 @@ function Pedido() {
             forma: formaEntrega,
             rua: endereco.rua.trim(),
             numero: endereco.numero.trim(),
-            complemento: endereco.complemento.trim(),
+            complemento: endereco.complemento ? endereco.complemento.trim() : '',
             bairro: endereco.bairro.trim(),
         };
 

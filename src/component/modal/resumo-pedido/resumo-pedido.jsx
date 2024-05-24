@@ -131,7 +131,6 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                             <span><b>Troco: </b> {pedido.pagamento.troco}</span>
                         )}
                     </div>
-
                     <div className={style.container_itens}>
                         <div className={style.itens_preco}>
                             <h2>Itens</h2>

@@ -69,7 +69,6 @@ function PaginaPrato() {
 
         if (pratoExistenteIndex !== -1) {
             cestaAtual[pratoExistenteIndex].quantidade += quantidade;
-            cestaAtual[pratoExistenteIndex].preco += itemCesta.preco;
         } else {
             cestaAtual.push(itemCesta);
         }

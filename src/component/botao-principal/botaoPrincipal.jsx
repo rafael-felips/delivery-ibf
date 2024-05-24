@@ -27,23 +27,14 @@ function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalC
 
   const precoFormatado = valorBotao ? substituirPontoPorVirgula(valorBotao.toFixed(2)) : '0,00';
 
-  // const handleClick = () => {
-  //   adicionarPrato();
-  //   if (paginaAtual != 'cardapio') {
-  //     window.location.href = '/cardapio'
-  //   };
-  // }
-
   const handleClick = () => {
     if (paginaAtual === 'cardapio') {
       if (cesta && cesta.length > 0) {
-        window.location.href = '/pedido'; // Redirecionar para a página de pedido
+        window.location.href = '/pedido';
       } else {
-        // alert('A cesta está vazia. Adicione itens antes de prosseguir para o pedido.');
-        toast.error('A pedido está vazio.', { autoClose: 3000 });
+        toast.error('O pedido está vazio.', { autoClose: 3000 });
       }
     } else if (paginaAtual != 'cardapio') {
-      // alert('entrou no else if')
       window.location.href = '/cardapio'
       adicionarPrato();
     }

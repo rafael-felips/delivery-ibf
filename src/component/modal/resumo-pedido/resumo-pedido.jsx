@@ -6,6 +6,12 @@ import money from "../../../assets/money.svg"
 
 function ResumoPedido({ pedido, fechar }) {
 
+    // useEffect(() => {
+    //     enviarDados()
+    //     console.log(pedido)
+    //     console.log(mensagem)
+    // })
+
     const handleCloseModal = () => {
         fechar();
     };
@@ -50,6 +56,7 @@ function ResumoPedido({ pedido, fechar }) {
                 return '';
         }
     }
+
     const formaPagamentoEmoji = renderizaFormaPagamentoEmoji(pedido.pagamento.forma);
 
     const mensagem = `Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
@@ -59,7 +66,7 @@ ${pedido.carrinho.map(item => `
 ➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
 ${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
 `).join('')}
-${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco.toFixed(2).replace('.', ',')})` : ''}
+${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')})` : ''}
 
 🛵 ${pedido.entrega.forma} (taxa de entrega: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
@@ -68,24 +75,56 @@ Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    // console.log(mensagem)
+    const enviarDados = () => {
+        const carrinhoFormatado = pedido.carrinho
+            .map(
+                (item) =>
+                    `${item.quantidade}x ${item.nome} - R$ ${item.preco.toFixed(2).replace('.', ',')}${item.observacao ? ` (${item.observacao})` : ""}`
+            ).join("\n")
+
+        fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa('nhfmr45f:7r7fz6q3zxsy0vk1u3q6')
+            },
+            body: JSON.stringify({
+                data: [
+                    {
+                        'ID': "INCREMENT",
+                        'Data': pedido.dataHora,
+                        'Cliente': pedido.cliente,
+                        'Telefone': pedido.telefone,
+                        'Carrinho': carrinhoFormatado,
+                        'Taxa de Entrega': pedido.entrega.taxa,
+                        'Forma de Entrega': pedido.entrega.forma,
+                        'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero}, ${pedido.entrega.complemento}, - ${pedido.entrega.bairro}`,
+                        'Forma de pagamento': pedido.pagamento.forma,
+                        'Troco': pedido.pagamento.troco,
+                        'Total': valorTotal
+                    }
+                ]
+            })
+        })
+            .then((response) => response.json())
+    };
 
     const finalizarPedido = async () => {
-        const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";
-
         try {
-            const response = await fetch(GZAPPY_URL, {
+            fetch('https://api.gzappy.com/v1/message/send-message', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
                 },
                 body: JSON.stringify({
-                    instance_id: "MSBDVMULNZ213LNJ0GWCAKA3",
-                    instance_token: "a2f897b4-651b-47d0-8a6b-c8cc9f4c0cd7",
+                    instance_id: "9IN782FSO286T6C54P7A6IA1",
+                    instance_token: "1aee5c16-f900-4b69-ad65-5ffc4c024c5c",
                     message: [mensagem],
                     phone: whatsapp
                 })
+
             });
 
 
@@ -93,9 +132,11 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
             console.error("Erro ao enviar a mensagem:", error);
         }
 
-        sessionStorage.removeItem('cesta');
-        window.location.href = '/';
+        enviarDados()
+        // sessionStorage.clear();
+        // window.location.href = '/';
     };
+
 
     return (
         <>
@@ -128,10 +169,9 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         </div>
                         <span><b>Forma: </b>{pedido.pagamento.forma}</span>
                         {pedido.pagamento.troco > 0 && (
-                            <span><b>Troco: </b> {pedido.pagamento.troco}</span>
+                            <span><b>Troco: </b> R$ {parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')}</span>
                         )}
                     </div>
-
                     <div className={style.container_itens}>
                         <div className={style.itens_preco}>
                             <h2>Itens</h2>

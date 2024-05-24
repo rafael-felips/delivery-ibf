@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import style from './dinheiro.module.css';
 
 function Dinheiro({ onClose, onConfirmar }) {
-    const [trocoValor, setTrocoValor] = useState(0);
+    // const [trocoValor, setTrocoValor] = useState(0);
+    const [trocoValor, setTrocoValor] = useState('');
     const [trocoSelecionado, setTrocoSelecionado] = useState(0);
 
     const handleClose = (e) => {

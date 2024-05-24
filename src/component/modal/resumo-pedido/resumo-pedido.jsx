@@ -6,6 +6,11 @@ import money from "../../../assets/money.svg"
 
 function ResumoPedido({ pedido, fechar }) {
 
+    useEffect(() => {
+        enviarDados()
+        console.log(pedido)
+    })
+
     const handleCloseModal = () => {
         fechar();
     };
@@ -68,8 +73,6 @@ Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    // console.log(mensagem)
-
     const finalizarPedido = async () => {
         const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";
 
@@ -95,6 +98,35 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
         sessionStorage.removeItem('cesta');
         window.location.href = '/';
+    };
+
+    const enviarDados = () => {
+        fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                data: [
+                    {
+                        'ID': "INCREMENT",
+                        'Data': pedido.dataHora,
+                        'Cliente': pedido.cliente,
+                        'Telefone': pedido.telefone,
+                        'Carrinho': pedido.carrinho,
+                        'Taxa de Entrega': pedido.entrega.taxa,
+                        'Forma de Entrega': pedido.entrega.forma,
+                        'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero}, ${pedido.entrega.complemento}, - ${pedido.entrega.bairro}`,
+                        'Forma de pagamento': pedido.pagamento.forma,
+                        'Troco': pedido.pagamento.troco
+                    }
+                ]
+            })
+        })
+            .then((response) => response.json())
+            .then((data) => console.log(data));
+
     };
 
     return (

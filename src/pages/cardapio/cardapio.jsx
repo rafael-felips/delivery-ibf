@@ -67,9 +67,9 @@ function Cardapio() {
                         </div>
                         {pratos.length > 0 ? (
                             <div className={style.container_pratos}>
-                                {pratos.map((prato) => (
+                                {pratos.map((prato, index) => (
                                     <Prato
-                                        key={prato.id}
+                                        key={index}
                                         id={prato.id}
                                         nome={prato.nome}
                                         resumo={prato.resumo}

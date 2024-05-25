@@ -99,7 +99,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         'Carrinho': carrinhoFormatado,
                         'Taxa de Entrega': pedido.entrega.taxa,
                         'Forma de Entrega': pedido.entrega.forma,
-                        'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero}, ${pedido.entrega.complemento}, - ${pedido.entrega.bairro}`,
+                        'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero} ${pedido.entrega.complemento ? `${pedido.entrega.complemento}` : ''} - ${pedido.entrega.bairro}`,
                         'Forma de pagamento': pedido.pagamento.forma,
                         'Troco': pedido.pagamento.troco,
                         'Total': valorTotal

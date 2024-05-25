@@ -10,7 +10,7 @@ function Prato({ id, nome, resumo, preco, imagem }) {
                 <div className={style.container_texto}>
                     <h3>{nome}</h3>
                     <span>{resumo}</span>
-                    <span className={style.preco}>R$ {preco.toFixed(2).replace('.',',')}</span>
+                    <span className={style.preco}>R$ {parseFloat(preco).toFixed(2).replace('.', ',')}</span>
                 </div>
             </div>
         </>

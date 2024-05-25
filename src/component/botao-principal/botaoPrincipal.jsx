@@ -6,7 +6,7 @@ import { toast, ToastContainer } from 'react-toastify';
 
 function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalCompra }) {
   const textoBotao = paginaAtual === 'cardapio' ? 'Meu Pedido' : 'Adicionar ao Pedido';
-  const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+  const cesta = JSON.parse(sessionStorage.getItem('carrinho'));
 
   let valorBotao = 0;
 

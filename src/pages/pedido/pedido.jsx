@@ -76,13 +76,14 @@ function Pedido() {
     useEffect(() => {
         const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
 
-        if (carrinho) {
+        if (carrinho && carrinho.length > 0) {
             let total = carrinho.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
             setCarrinho(carrinho);
             setValorTotal(total);
         } else {
-            window.location.href = '/';
+            window.location.href = '/cardapio';
         }
+
     }, []);
 
     const handleFormaEntrega = (forma) => {
@@ -212,6 +213,16 @@ function Pedido() {
         handleEditarItemClose();
     };
 
+    const removerItem = (itemId) => {
+        if (carrinho.length === 1) {
+            sessionStorage.clear()
+            window.location.reload()
+        } else {
+            const novoCarrinho = carrinho.filter(item => item.id !== itemId);
+            sessionStorage.setItem('carrinho', JSON.stringify(novoCarrinho))
+        }
+    }
+
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';
         if (cep.length === 8) {
@@ -322,7 +333,7 @@ function Pedido() {
                     ))}
                     {
                         modalEditarItem && (
-                            <EditarItem item={itemSelecionado} onSave={atualizarItem} onClose={handleEditarItemClose} />
+                            <EditarItem item={itemSelecionado} onSave={atualizarItem} removerItem={removerItem} onClose={handleEditarItemClose} />
                         )
                     }
                     <div className={style.container_item}>

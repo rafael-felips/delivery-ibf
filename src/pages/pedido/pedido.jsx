@@ -74,11 +74,11 @@ function Pedido() {
     })
 
     useEffect(() => {
-        const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+        const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
 
-        if (cesta) {
-            let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
-            setCarrinho(cesta);
+        if (carrinho) {
+            let total = carrinho.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+            setCarrinho(carrinho);
             setValorTotal(total);
         } else {
             window.location.href = '/';
@@ -208,7 +208,7 @@ function Pedido() {
         setCarrinho(carrinhoAtualizado);
         setValorTotal(novoValorTotal);
 
-        sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
+        sessionStorage.setItem('carrinho', JSON.stringify(carrinhoAtualizado));
         handleEditarItemClose();
     };
 

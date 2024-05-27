@@ -20,11 +20,11 @@ function Cardapio() {
     useEffect(() => {
         listar();
 
-        const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+        const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
 
         let total = 0;
-        if (cesta) {
-            total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+        if (carrinho) {
+            total = carrinho.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
         }
 
         setValorTotal(total);
@@ -67,46 +67,30 @@ function Cardapio() {
                         </div>
                         {pratos.length > 0 ? (
                             <div className={style.container_pratos}>
-                                {pratos.map((prato, index) => (
+                                {pratos.map((prato) => (
                                     <Prato
-                                        key={index}
-                                        id={prato.id}
-                                        nome={prato.nome}
-                                        resumo={prato.resumo}
-                                        preco={prato.preco}
+                                        key={prato.ID}
+                                        id={prato.ID}
+                                        nome={prato.Nome}
+                                        resumo={prato.Resumo}
+                                        preco={prato.Preço}
                                         imagem={prato.imagem1}
                                     />
                                 ))}
                             </div>
                         ) : (
                             <div className={style.container_pratos}>
-                                <div className={style.prato}>
-                                    <div className={style.foto} />
-                                    <div className={style.container_texto}>
-                                        <h3>‎ </h3>
-                                        <span>‎ </span>
-                                        <span>‎ </span>
-                                        <b className={style.preco}>‎ </b>
+                                {Array.from({ length: 3 }).map((_, index) => (
+                                    <div className={style.prato} key={index}>
+                                        <div className={style.foto} />
+                                        <div className={style.container_texto}>
+                                            <h3>‎</h3>
+                                            <span>‎</span>
+                                            <span>‎</span>
+                                            <b className={style.preco}>‎</b>
+                                        </div>
                                     </div>
-                                </div>
-                                <div className={style.prato}>
-                                    <div className={style.foto} />
-                                    <div className={style.container_texto}>
-                                        <h3>‎ </h3>
-                                        <span>‎ </span>
-                                        <span>‎ </span>
-                                        <b className={style.preco}>‎ </b>
-                                    </div>
-                                </div>
-                                <div className={style.prato}>
-                                    <div className={style.foto} />
-                                    <div className={style.container_texto}>
-                                        <h3>‎ </h3>
-                                        <span>‎ </span>
-                                        <span>‎ </span>
-                                        <b className={style.preco}>‎ </b>
-                                    </div>
-                                </div>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -115,7 +99,6 @@ function Cardapio() {
                     paginaAtual={"cardapio"} valorTotal={valorTotal} />
             </div>
             {modalAberto && <Informacoes onClose={handleCloseModal} />}
-            {/* <ToastContainer /> */}
         </>
     );
 };

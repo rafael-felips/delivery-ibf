@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import style from './resumo-pedido.module.css';
 import user from '../../../assets/profile.svg'
 import local from "../../../assets/map-point-svgrepo2.svg"
@@ -6,23 +6,12 @@ import money from "../../../assets/money.svg"
 
 function ResumoPedido({ pedido, fechar }) {
 
-    // useEffect(() => {
-    //     enviarDados()
-    //     console.log(pedido)
-    //     console.log(mensagem)
-    // })
-
-    const handleCloseModal = () => {
-        fechar();
-    };
-
     const handleModalClick = (event) => {
         if (event.target === event.currentTarget) {
             fechar();
         }
     };
 
-    const carrinho = pedido.carrinho
     function calcularValorTotal(pedido) {
         if (!pedido || !pedido.carrinho || !Array.isArray(pedido.carrinho)) {
             return 0;
@@ -119,14 +108,13 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                     user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
                 },
                 body: JSON.stringify({
-                    instance_id: "9IN782FSO286T6C54P7A6IA1",
-                    instance_token: "1aee5c16-f900-4b69-ad65-5ffc4c024c5c",
+                    instance_id: "NWQ5H21BO0PPFUOCRD64DF8X",
+                    instance_token: "40e606f8-b73d-40b0-b39d-83d56f24a4ce",
                     message: [mensagem],
                     phone: whatsapp
                 })
 
             });
-
 
         } catch (error) {
             console.error("Erro ao enviar a mensagem:", error);

@@ -71,7 +71,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                     `${item.quantidade}x ${item.nome} - R$ ${item.preco.toFixed(2).replace('.', ',')}${item.observacao ? ` (${item.observacao})` : ""}`
             ).join("\n")
 
-        fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
+        return (fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
             method: 'POST',
             headers: {
                 'Accept': 'application/json',
@@ -95,36 +95,59 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                     }
                 ]
             })
-        })
+        }))
             .then((response) => response.json())
     };
 
-    const finalizarPedido = async () => {
+    const enviarMensagem = () => {
         try {
-            fetch('https://api.gzappy.com/v1/message/send-message', {
+            //return (fetch('https://api.gzappy.com/v1/message/send-message', {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
+            //     },
+            //     body: JSON.stringify({
+            //         instance_id: "NWQ5H21BO0PPFUOCRD64DF8X",
+            //         instance_token: "40e606f8-b73d-40b0-b39d-83d56f24a4ce",
+            //         message: [mensagem],
+            //         phone: whatsapp
+            //     })
+            // });
+
+            return (fetch('https://api.gzappy.com/v1/message/send-message', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
+                    user_token_id: "1211f4e0-26a4-41e0-8309-730ce983f7f8"
                 },
                 body: JSON.stringify({
-                    instance_id: "NWQ5H21BO0PPFUOCRD64DF8X",
-                    instance_token: "40e606f8-b73d-40b0-b39d-83d56f24a4ce",
+                    instance_id: "EPWPVNW4677DJYTZDZOLO4ER",
+                    instance_token: "21107b1c-5735-4eb0-ab3c-588f28e95c13",
                     message: [mensagem],
                     phone: whatsapp
                 })
-
-            });
+            }));
 
         } catch (error) {
             console.error("Erro ao enviar a mensagem:", error);
         }
+    }
 
-        enviarDados()
-        // sessionStorage.clear();
-        // window.location.href = '/';
+    const finalizarPedido = async () => {
+        try {
+            const responsePlanilha = await enviarDados();
+            // console.log('Dados enviados para a planilha: ', responsePlanilha)
+
+            const responseMensagem = await enviarMensagem();
+            // console.log('Mensagem enviada: ', responseMensagem)
+
+            sessionStorage.clear();
+            window.location.href = '/';
+        } catch (error) {
+            console.error("Erro ao finalizar o pedido: ", error)
+        }
     };
-
 
     return (
         <>

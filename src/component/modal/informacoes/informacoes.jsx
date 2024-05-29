@@ -4,7 +4,7 @@ import local from '../../../assets/map-point-svgrepo2.svg'
 import relogio from '../../../assets/clock-check-svgrepo-com.svg'
 import pagamento from '../../../assets/money.svg'
 
-function Informacoes({ onClose }) {
+function Informacoes({ onClose, infos }) {
     const handleCloseModal = () => {
         onClose();
     };
@@ -25,14 +25,14 @@ function Informacoes({ onClose }) {
                             <img src={local} className={style.icon} alt="" />
                             <h3>Endereço</h3>
                         </div>
-                        <a href="https://maps.app.goo.gl/wCS7qL3pRYrabKEN6" target="_blank">Rua Presidente Oscár Benavides, 58 - Cid Tiradentes, São Paulo - SP</a>
+                        <a href="https://maps.app.goo.gl/wCS7qL3pRYrabKEN6" target="_blank">Rua Presidente Oscár Benavides, 58 - Cidade Tiradentes</a>
                     </div>
                     <div className={style.container_informacoes}>
                         <div className={style.container_titulo}>
                             <img src={relogio} className={style.icon} alt="" />
                             <h3>Funcionamento</h3>
                         </div>
-                        <span>Sábado: 11h ás 15h</span>
+                        <span>Sábado: {infos.Abre} ás {infos.Fecha}</span>
                     </div>
                     <div className={style.container_informacoes}>
                         <div className={style.container_titulo}>
@@ -40,10 +40,11 @@ function Informacoes({ onClose }) {
                             <h3>Formas de Pagamento</h3>
                         </div>
                         <div className={style.container_pagamento}>
-                            <span className={style.pagamento}>Dinheiro</span>
-                            <span className={style.pagamento}>Pix</span>
-                            <span className={style.pagamento}>Débito</span>
-                            <span className={style.pagamento}>Crédito</span>
+                            {
+                                infos.Pagamento.map((item) => (
+                                    <span className={style.pagamento} key={item}>{item}</span>
+                                ))
+                            }
                         </div>
                     </div>
                 </div>

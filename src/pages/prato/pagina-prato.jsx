@@ -9,6 +9,7 @@ import api from '../../api/api';
 import voltar from '../../assets/back.svg';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
 
 function PaginaPrato() {
     const navigate = useNavigate();
@@ -28,6 +29,14 @@ function PaginaPrato() {
     }
 
     useEffect(() => {
+        axios.get('https://script.google.com/macros/s/AKfycbwHNN1j6cOpRmBoMC7nFPfTBbl8625lknKbbB0D7e61DxmyzdBhBEGKElAaMlMZO-WT2A/exec')
+            .then(response => {
+                console.log(response.data)
+                if (!(response.data.Aberto)) { window.location.href = '/' }
+            })
+            .catch(error => {
+                console.error('Houve um problema com a requisição axios:', error.message);
+            });
         buscarPrato();
     }, [id]);
 

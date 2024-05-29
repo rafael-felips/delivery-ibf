@@ -1,58 +1,102 @@
 .corpo {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 100px;
-    /* background-color: #ececec; */
-    padding: 50px 0px;
-    position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 100px;
+  /* background-color: #ececec; */
+  padding: 50px 0px;
+  position: relative;
 }
 
 .perfil {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
 }
 
 .foto_perfil {
-    height: 200px;
-    width: 200px;
-    background-color: #ffffff;
-    border-radius: 50%;
-    border: 1px solid #0077B6;
+  height: 200px;
+  width: 200px;
+  background-color: #ffffff;
+  border-radius: 50%;
+  border: 1px solid #0077b6;
 }
 
-.foto_perfil>img {
-    width: 100%;
+.foto_perfil > img {
+  width: 100%;
 }
 
-.perfil>h1 {
-    color: #252525;
-    font-size: 24px;
+.perfil > h1 {
+  color: #252525;
+  font-size: 24px;
 }
 
-.funcionamento {
-    font-size: 16px;
-    color: #319a2f;
-    text-decoration: underline;
+.funcionamento_aberto {
+  font-size: 18px;
+  color: #319a2f;
+  font-weight: 600;
+}
+
+.funcionamento_fechado {
+  font-size: 18px;
+  color: #ca0d0d;
+  font-weight: 600;
 }
 
 .botao {
-    background-color: #0077b6;
-    font-weight: 700;
-    color: #fff;
-    font-size: 18px;
-    padding: 10px 10px;
-    border-radius: 5px;
-    box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
-    cursor: pointer;
+  background-color: #0077b6;
+  font-weight: 700;
+  color: #fff;
+  font-size: 18px;
+  padding: 10px 10px;
+  border-radius: 5px;
+  box-shadow: 0px 2px 4px 0px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
 }
 
-.whatsapp{
-    position: absolute;
-    width: 80px;
-    right: 20px;
-    cursor: pointer;
+.whatsapp {
+  position: absolute;
+  width: 80px;
+  right: 20px;
+  cursor: pointer;
+}
+
+.loading {
+  width: 3.25em;
+  transform-origin: center;
+  animation: rotate4 2s linear infinite;
+}
+
+circle {
+  fill: none;
+  stroke: hsl(214, 97%, 59%);
+  stroke-width: 2;
+  stroke-dasharray: 1, 200;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: dash4 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate4 {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash4 {
+  0% {
+    stroke-dasharray: 1, 200;
+    stroke-dashoffset: 0;
+  }
+
+  50% {
+    stroke-dasharray: 90, 200;
+    stroke-dashoffset: -35px;
+  }
+
+  100% {
+    stroke-dashoffset: -125px;
+  }
 }

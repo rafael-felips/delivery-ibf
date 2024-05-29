@@ -13,6 +13,7 @@ import { buscarCep } from '../../api/apicep';
 import ResumoPedido from '../../component/modal/resumo-pedido/resumo-pedido';
 import EditarItem from '../../component/modal/editar-item/editar-item';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Pedido() {
     const navigate = useNavigate();
@@ -37,6 +38,7 @@ function Pedido() {
     const [itemSelecionado, setItemSelecionado] = useState(null);
 
     const [taxaEntrega, setTaxaEntrega] = useState(0);
+    const [taxaApi, setTaxaEntregaApi] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
     const [troco, setTroco] = useState(0)
     const [cliente, setCliente] = useState({
@@ -74,6 +76,15 @@ function Pedido() {
     })
 
     useEffect(() => {
+        axios.get('https://script.google.com/macros/s/AKfycbwHNN1j6cOpRmBoMC7nFPfTBbl8625lknKbbB0D7e61DxmyzdBhBEGKElAaMlMZO-WT2A/exec')
+            .then(response => {
+                if (!(response.data.Aberto)) { window.location.href = '/' }
+                setTaxaEntregaApi(response.data.taxaEntrega)
+            })
+            .catch(error => {
+                console.error('Houve um problema com a requisição axios:', error.message);
+            });
+
         const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
 
         if (carrinho && carrinho.length > 0) {
@@ -93,13 +104,20 @@ function Pedido() {
     const handleEntregaClick = () => {
         if (entregaAtiva) {
             setEntregaAtiva(false);
+            handleFormaEntrega('');
+            setTaxaEntrega(0)
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         } else {
-
             setEntregaAtiva(true);
             setRetiradaAtiva(false);
             handleFormaEntrega("Entrega")
-            setTaxaEntrega(2)
-
+            setTaxaEntrega(taxaApi)
             setEndereco({
                 cep: '',
                 rua: '',
@@ -113,6 +131,14 @@ function Pedido() {
     const handleRetiradaClick = () => {
         if (retiradaAtiva) {
             setRetiradaAtiva(false);
+            handleFormaEntrega('');
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         } else {
             handleFormaEntrega("Retirada");
             setRetiradaAtiva(true);
@@ -245,6 +271,8 @@ function Pedido() {
             toast.error('Nome inválido', { autoClose: 3000 });
         } else if (cliente.telefone.replace(/\D/g, '').length !== 11) {
             toast.error('Número de telefone inválido.', { autoClose: 3000 });
+        } else if (formaEntrega === '') {
+            toast.error('Selecione modo de entrega.', { autoClose: 3000 });
         } else if (formaEntrega === 'Entrega' && (endereco.rua === '' || endereco.numero === '')) {
             toast.error('Preencha o nome da rua e o número.', { autoClose: 3000 });
         } else if (formaPagamento === '') {
@@ -327,7 +355,6 @@ function Pedido() {
                                     <b>{item.quantidade}×</b> {item.nome}
                                 </span>
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
-                                {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
                             <img src={editar} className={style.editar} />
                         </div>
@@ -340,7 +367,7 @@ function Pedido() {
                     <div className={style.container_item}>
                         <div className={style.item}>
                             <span>Taxa de entrega</span>
-                            <span>R$ {taxaEntrega.toFixed(2).replace('.', ',')}</span>
+                            <span>R$ {parseFloat(taxaEntrega).toFixed(2).replace('.', ',')}</span>
                         </div>
                     </div>
                     <div className={style.container_total}>

@@ -381,7 +381,6 @@ function Pedido() {
                         <span>Retirada</span>
                     </div>
                 </div>
-                {/* <div className={style.container_endereco}> */}
                 <div className={`${style.container_endereco} ${entregaAtiva ? '' : style.hidden}`}>
                     <div className={style.linha1}>
                         <div className={style.input_cep}>

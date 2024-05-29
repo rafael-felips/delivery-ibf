@@ -219,7 +219,8 @@ function Pedido() {
             window.location.reload()
         } else {
             const novoCarrinho = carrinho.filter(item => item.id !== itemId);
-            sessionStorage.setItem('carrinho', JSON.stringify(novoCarrinho))
+            sessionStorage.setItem('carrinho', JSON.stringify(novoCarrinho));
+            window.location.reload()
         }
     }
 

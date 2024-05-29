@@ -385,14 +385,14 @@ function Pedido() {
                 <div className={`${style.container_endereco} ${entregaAtiva ? '' : style.hidden}`}>
                     <div className={style.linha1}>
                         <div className={style.input_cep}>
-                            <span>Nome da Rua</span>
-                            <input type="text" value={endereco.rua} onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })} />
+                            <span>CEP</span>
+                            <InputMask type='tel' inputMode='numeric' mask="99999-999" placeholder="00000-000" maskChar=" " onChange={handleCepChange} defaultValue={endereco.cep} disabled={!entregaAtiva} />
                         </div>
                     </div>
                     <div className={style.linha2}>
                         <div className={style.input_rua}>
-                            <span>CEP</span>
-                            <InputMask type='tel' inputMode='numeric' mask="99999-999" placeholder="00000-000" maskChar=" " onChange={handleCepChange} defaultValue={endereco.cep} disabled={!entregaAtiva} />
+                            <span>Nome da Rua</span>
+                            <input type="text" value={endereco.rua} onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })} />
                         </div>
                     </div>
                     <div className={style.linha3}>

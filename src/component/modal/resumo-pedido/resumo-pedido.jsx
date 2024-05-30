@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import style from './resumo-pedido.module.css';
 import user from '../../../assets/profile.svg'
 import local from "../../../assets/map-point-svgrepo2.svg"
 import money from "../../../assets/money.svg"
+import BarraDeProgresso from '../../barra-progresso/barra-progresso';
 
 function ResumoPedido({ pedido, fechar }) {
+    const [progresso, setProgresso] = useState(0)
+    const [mensagemProgresso, setMensagemProgresso] = useState('')
+    const [barraProgresso, setBarraProgresso] = useState(false)
 
     const handleModalClick = (event) => {
         if (event.target === event.currentTarget) {
@@ -139,12 +143,28 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
     }
 
     const finalizarPedido = async () => {
+        setBarraProgresso(true)
         try {
+            setProgresso(0)
+            setMensagemProgresso("Confirmando seu pedido...")
+
             await enviarDados();
+            setProgresso(30)
+            setMensagemProgresso("Enviando seu pedido para a cozinha...")
+
             await enviarMensagem();
+            setProgresso(60)
+            setMensagemProgresso("Seu pedido está na fila de preparo!")
 
             sessionStorage.clear();
+            setProgresso(80)
+            setMensagemProgresso("Cozinha a todo vapor!")
+
+            setProgresso(100)
+            setMensagemProgresso("Pedido finalizado com sucesso!")
+
             window.location.href = '/';
+
         } catch (error) {
             console.error("Erro ao finalizar o pedido: ", error)
         }
@@ -213,6 +233,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                     <button className={style.botao} onClick={finalizarPedido}>Finalizar Pedido</button>
                 </div>
             </div>
+            {barraProgresso && <BarraDeProgresso progresso={progresso} mensagem={mensagemProgresso} />}
         </>
     );
 };

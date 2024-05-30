@@ -53,8 +53,8 @@ function ResumoPedido({ pedido, fechar }) {
 *Itens:*
 ${pedido.carrinho.map(item => `
 ➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
-${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
-`).join('')}
+${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}`).join('')}
+
 ${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')})` : ''}
 
 🛵 ${pedido.entrega.forma} (taxa de entrega: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
@@ -97,11 +97,15 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
             })
         }))
             .then((response) => response.json())
+            .catch(error => {
+                console.error('Erro ao enviar dados para a planilha: ', error)
+                throw error;
+            })
     };
 
     const enviarMensagem = () => {
         try {
-            //return (fetch('https://api.gzappy.com/v1/message/send-message', {
+            //return (fetch('https://api.gzappy.com/v1/message/send-message', { // Conta Rafael
             //     method: "POST",
             //     headers: {
             //         "Content-Type": "application/json",
@@ -115,7 +119,7 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
             //     })
             // });
 
-            return (fetch('https://api.gzappy.com/v1/message/send-message', {
+            return (fetch('https://api.gzappy.com/v1/message/send-message', { // Conta Karina
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
@@ -136,11 +140,8 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
     const finalizarPedido = async () => {
         try {
-            const responsePlanilha = await enviarDados();
-            // console.log('Dados enviados para a planilha: ', responsePlanilha)
-
-            const responseMensagem = await enviarMensagem();
-            // console.log('Mensagem enviada: ', responseMensagem)
+            await enviarDados();
+            await enviarMensagem();
 
             sessionStorage.clear();
             window.location.href = '/';

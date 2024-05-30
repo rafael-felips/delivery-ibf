@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import style from './resumo-pedido.module.css';
 import user from '../../../assets/profile.svg'
 import local from "../../../assets/map-point-svgrepo2.svg"
@@ -6,17 +6,12 @@ import money from "../../../assets/money.svg"
 
 function ResumoPedido({ pedido, fechar }) {
 
-    const handleCloseModal = () => {
-        fechar();
-    };
-
     const handleModalClick = (event) => {
         if (event.target === event.currentTarget) {
             fechar();
         }
     };
 
-    const carrinho = pedido.carrinho
     function calcularValorTotal(pedido) {
         if (!pedido || !pedido.carrinho || !Array.isArray(pedido.carrinho)) {
             return 0;
@@ -50,6 +45,7 @@ function ResumoPedido({ pedido, fechar }) {
                 return '';
         }
     }
+
     const formaPagamentoEmoji = renderizaFormaPagamentoEmoji(pedido.pagamento.forma);
 
     const mensagem = `Olá ${pedido.cliente}, recebemos o seu pedido e ele já está sendo preparado!
@@ -59,7 +55,7 @@ ${pedido.carrinho.map(item => `
 ➡ ${item.quantidade}x ${monospace}${item.nome}${monospace}
 ${monospace}    R$ ${(item.preco * item.quantidade).toFixed(2).replace(".", ",")}${monospace} ${item.observacao ? ` ${monospace}(${item.observacao})${monospace}` : ''}
 `).join('')}
-${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${pedido.pagamento.troco.toFixed(2).replace('.', ',')})` : ''}
+${formaPagamentoEmoji} ${pedido.pagamento.forma}${pedido.pagamento.troco ? ` (troco: R$ ${parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')})` : ''}
 
 🛵 ${pedido.entrega.forma} (taxa de entrega: R$ ${pedido.entrega.taxa.toFixed(2).replace('.', ',')})
 🏠 ${pedido.entrega.rua}, Nº ${pedido.entrega.numero}${pedido.entrega.complemento ? ` - ${pedido.entrega.complemento}` : ''}, ${pedido.entrega.bairro}
@@ -68,33 +64,89 @@ Total: *R$ ${calcularValorTotal(pedido).toFixed(2).replace('.', ',')}*
 
 Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
 
-    // console.log(mensagem)
+    const enviarDados = () => {
+        const carrinhoFormatado = pedido.carrinho
+            .map(
+                (item) =>
+                    `${item.quantidade}x ${item.nome} - R$ ${item.preco.toFixed(2).replace('.', ',')}${item.observacao ? ` (${item.observacao})` : ""}`
+            ).join("\n")
 
-    const finalizarPedido = async () => {
-        const GZAPPY_URL = "https://api.gzappy.com/v1/message/send-message";
+        return (fetch('https://sheetdb.io/api/v1/yt20l2qti41d5', {
+            method: 'POST',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json',
+                'Authorization': 'Basic ' + btoa('nhfmr45f:7r7fz6q3zxsy0vk1u3q6')
+            },
+            body: JSON.stringify({
+                data: [
+                    {
+                        'ID': "INCREMENT",
+                        'Data': pedido.dataHora,
+                        'Cliente': pedido.cliente,
+                        'Telefone': pedido.telefone,
+                        'Carrinho': carrinhoFormatado,
+                        'Taxa de Entrega': pedido.entrega.taxa,
+                        'Forma de Entrega': pedido.entrega.forma,
+                        'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero} ${pedido.entrega.complemento ? `${pedido.entrega.complemento}` : ''} - ${pedido.entrega.bairro}`,
+                        'Forma de pagamento': pedido.pagamento.forma,
+                        'Troco': pedido.pagamento.troco,
+                        'Total': valorTotal
+                    }
+                ]
+            })
+        }))
+            .then((response) => response.json())
+    };
 
+    const enviarMensagem = () => {
         try {
-            const response = await fetch(GZAPPY_URL, {
+            //return (fetch('https://api.gzappy.com/v1/message/send-message', {
+            //     method: "POST",
+            //     headers: {
+            //         "Content-Type": "application/json",
+            //         user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
+            //     },
+            //     body: JSON.stringify({
+            //         instance_id: "NWQ5H21BO0PPFUOCRD64DF8X",
+            //         instance_token: "40e606f8-b73d-40b0-b39d-83d56f24a4ce",
+            //         message: [mensagem],
+            //         phone: whatsapp
+            //     })
+            // });
+
+            return (fetch('https://api.gzappy.com/v1/message/send-message', {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
-                    user_token_id: "817ac47a-6d80-4233-b0c6-afda3773726a"
+                    user_token_id: "1211f4e0-26a4-41e0-8309-730ce983f7f8"
                 },
                 body: JSON.stringify({
-                    instance_id: "MSBDVMULNZ213LNJ0GWCAKA3",
-                    instance_token: "a2f897b4-651b-47d0-8a6b-c8cc9f4c0cd7",
+                    instance_id: "EPWPVNW4677DJYTZDZOLO4ER",
+                    instance_token: "21107b1c-5735-4eb0-ab3c-588f28e95c13",
                     message: [mensagem],
                     phone: whatsapp
                 })
-            });
-
+            }));
 
         } catch (error) {
             console.error("Erro ao enviar a mensagem:", error);
         }
+    }
 
-        sessionStorage.removeItem('cesta');
-        window.location.href = '/';
+    const finalizarPedido = async () => {
+        try {
+            const responsePlanilha = await enviarDados();
+            // console.log('Dados enviados para a planilha: ', responsePlanilha)
+
+            const responseMensagem = await enviarMensagem();
+            // console.log('Mensagem enviada: ', responseMensagem)
+
+            sessionStorage.clear();
+            window.location.href = '/';
+        } catch (error) {
+            console.error("Erro ao finalizar o pedido: ", error)
+        }
     };
 
     return (
@@ -128,10 +180,9 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         </div>
                         <span><b>Forma: </b>{pedido.pagamento.forma}</span>
                         {pedido.pagamento.troco > 0 && (
-                            <span><b>Troco: </b> {pedido.pagamento.troco}</span>
+                            <span><b>Troco: </b> R$ {parseFloat(pedido.pagamento.troco).toFixed(2).replace('.', ',')}</span>
                         )}
                     </div>
-
                     <div className={style.container_itens}>
                         <div className={style.itens_preco}>
                             <h2>Itens</h2>

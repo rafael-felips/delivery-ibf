@@ -1,11 +1,12 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import style from './editar-item.module.css'
+import trash from '../../../assets/trash-svgrepo-com.svg'
+import { ImGift } from 'react-icons/im';
 
-function EditarItem({ item, onClose, onSave }) {
+function EditarItem({ item, onClose, onSave, removerItem }) {
     const [quantidade, setQuantidade] = useState(item.quantidade);
     const [observacao, setObservacao] = useState(item.observacao);
     const [preco, setPreco] = useState(item.preco)
-    // let [precoTotal, setPrecoTotal] = useState();
 
     const handleSave = () => {
         const itemAtualizado = {
@@ -26,6 +27,8 @@ function EditarItem({ item, onClose, onSave }) {
     const diminuirQuantidade = () => {
         if (quantidade > 1) {
             setQuantidade(quantidade - 1);
+        } else {
+            removerItem(item.id)
         }
     };
 
@@ -36,7 +39,7 @@ function EditarItem({ item, onClose, onSave }) {
                 <div className={style.container_item}>
                     <span>{item.nome}</span>
                     <div className={style.quantidade}>
-                        <button onClick={diminuirQuantidade}>-</button>
+                        {quantidade > 1 ? <button onClick={diminuirQuantidade}>-</button> : <img src={trash} onClick={diminuirQuantidade} className={style.trash} />}
                         <span>{quantidade}</span>
                         <button onClick={aumentarQuantidade}>+</button>
                     </div>
@@ -48,7 +51,6 @@ function EditarItem({ item, onClose, onSave }) {
                 <div className={style.total}>
                     <h3>Total</h3>
                     <span>R$ {(preco * quantidade).toFixed(2).replace('.', ',')}</span>
-                    {/* <span>R$ {(precoTotal).toFixed(2).replace('.', ',')}</span> */}
                 </div>
                 <div className={style.container_botoes}>
                     <button onClick={onClose} style={{ backgroundColor: '#FF6767' }}>Cancelar</button>

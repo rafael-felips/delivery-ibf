@@ -6,13 +6,13 @@ import { toast, ToastContainer } from 'react-toastify';
 
 function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalCompra }) {
   const textoBotao = paginaAtual === 'cardapio' ? 'Meu Pedido' : 'Adicionar ao Pedido';
-  const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+  const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
 
   let valorBotao = 0;
 
   let totalPedido = 0;
-  if (cesta) {
-    totalPedido = cesta.reduce((total, item) => total + (item.preco * item.quantidade), 0);
+  if (carrinho) {
+    totalPedido = carrinho.reduce((total, item) => total + (item.preco * item.quantidade), 0);
   }
 
   if (paginaAtual === 'cardapio') {
@@ -29,7 +29,11 @@ function BotaoPrincipal({ adicionarPrato, valorTotal, paginaAtual, preco, totalC
 
   const handleClick = () => {
     if (paginaAtual === 'cardapio') {
+<<<<<<< HEAD
       if (cesta && cesta.length > 0) {
+=======
+      if (carrinho && carrinho.length > 0) {
+>>>>>>> 42f52959fd7cba49533273ec2e4f4b9b48dceff2
         window.location.href = '/pedido';
       } else {
         toast.error('O pedido está vazio.', { autoClose: 3000 });

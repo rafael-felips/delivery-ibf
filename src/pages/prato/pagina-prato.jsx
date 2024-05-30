@@ -9,6 +9,7 @@ import api from '../../api/api';
 import voltar from '../../assets/back.svg';
 import { useNavigate } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
+import axios from 'axios';
 
 function PaginaPrato() {
     const navigate = useNavigate();
@@ -17,20 +18,28 @@ function PaginaPrato() {
     const [quantidade, setQuantidade] = useState(1);
     const [observacao, setObservacao] = useState('');
 
-    useEffect(() => {
-        buscarPrato();
-    }, [id]);
-
     function buscarPrato() {
         api.get()
             .then((respostaObtida) => {
                 setPrato(respostaObtida.data[id - 1]);
-                console.log(prato)
             })
             .catch((erroOcorrido) => {
                 console.log('Erro ao obter os pratos:', erroOcorrido);
             });
     }
+
+    useEffect(() => {
+        axios.get('https://script.google.com/macros/s/AKfycbwHNN1j6cOpRmBoMC7nFPfTBbl8625lknKbbB0D7e61DxmyzdBhBEGKElAaMlMZO-WT2A/exec')
+            .then(response => {
+                console.log(response.data)
+                if (!(response.data.Aberto)) { window.location.href = '/' }
+            })
+            .catch(error => {
+                console.error('Houve um problema com a requisição axios:', error.message);
+            });
+        buscarPrato();
+    }, [id]);
+
 
     const settings = {
         dots: true,
@@ -56,25 +65,24 @@ function PaginaPrato() {
         }
     };
 
-    const adicionarPratoNaCesta = () => {
-        const itemCesta = {
-            id: prato.id,
-            nome: prato.nome,
+    const adicionarPratoNoCarrinho = () => {
+        const itemCarrinho = {
+            id: prato.ID,
+            nome: prato.Nome,
             quantidade: quantidade,
-            preco: prato.preco,
+            preco: prato.Preço,
             observacao: observacao,
         };
-        const cestaAtual = JSON.parse(sessionStorage.getItem('cesta')) || [];
-        const pratoExistenteIndex = cestaAtual.findIndex((item) => item.id === itemCesta.id);
+        const carrinhoAtual = JSON.parse(sessionStorage.getItem('carrinho')) || [];
+        const pratoExistenteIndex = carrinhoAtual.findIndex((item) => item.id === itemCarrinho.id);
 
         if (pratoExistenteIndex !== -1) {
-            cestaAtual[pratoExistenteIndex].quantidade += quantidade;
-            cestaAtual[pratoExistenteIndex].preco += itemCesta.preco;
+            carrinhoAtual[pratoExistenteIndex].quantidade += quantidade;
         } else {
-            cestaAtual.push(itemCesta);
+            carrinhoAtual.push(itemCarrinho);
         }
 
-        sessionStorage.setItem('cesta', JSON.stringify(cestaAtual));
+        sessionStorage.setItem('carrinho', JSON.stringify(carrinhoAtual));
     };
 
     if (!prato) {
@@ -134,12 +142,12 @@ function PaginaPrato() {
                 <div className={style.container}>
                     <div className={style.container_infos}>
                         <div className={style.container_nome_desc}>
-                            <h1>{prato.nome}</h1>
-                            <p>{prato.resumo}</p>
+                            <h1>{prato.Nome}</h1>
+                            <p>{prato.Resumo}</p>
                         </div>
                         <div className={style.containter_serve_preco}>
-                            <span>Serve <b>{prato.serve}</b> pessoas</span>
-                            <b>R$ {prato.preco.toFixed(2).replace('.', ',')}</b>
+                            <span>Serve <b>{prato.Serve}</b> pessoas</span>
+                            <b>R$ {parseFloat(prato.Preço).toFixed(2).replace('.', ',')}</b>
                         </div>
                     </div>
                     <div className={style.container_quantidade}>
@@ -154,7 +162,7 @@ function PaginaPrato() {
                         <b>Observações</b>
                         <textarea id="observacao" cols="30" rows="4" value={observacao} onChange={(e) => setObservacao(e.target.value)}></textarea>
                     </div>
-                    <BotaoPrincipal onClick={() => window.location.href = '/cardapio'} adicionarPrato={adicionarPratoNaCesta} preco={prato.preco * quantidade} paginaAtual="prato" />
+                    <BotaoPrincipal onClick={() => window.location.href = '/cardapio'} adicionarPrato={adicionarPratoNoCarrinho} preco={prato.Preço * quantidade} paginaAtual="prato" />
                 </div>
             </div>
             <ToastContainer />

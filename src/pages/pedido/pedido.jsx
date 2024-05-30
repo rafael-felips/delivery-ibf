@@ -13,6 +13,7 @@ import { buscarCep } from '../../api/apicep';
 import ResumoPedido from '../../component/modal/resumo-pedido/resumo-pedido';
 import EditarItem from '../../component/modal/editar-item/editar-item';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 
 function Pedido() {
     const navigate = useNavigate();
@@ -37,6 +38,7 @@ function Pedido() {
     const [itemSelecionado, setItemSelecionado] = useState(null);
 
     const [taxaEntrega, setTaxaEntrega] = useState(0);
+    const [taxaApi, setTaxaEntregaApi] = useState(0);
     const [valorTotal, setValorTotal] = useState(0);
     const [troco, setTroco] = useState(0)
     const [cliente, setCliente] = useState({
@@ -74,15 +76,25 @@ function Pedido() {
     })
 
     useEffect(() => {
-        const cesta = JSON.parse(sessionStorage.getItem('cesta'));
+        axios.get('https://script.google.com/macros/s/AKfycbwHNN1j6cOpRmBoMC7nFPfTBbl8625lknKbbB0D7e61DxmyzdBhBEGKElAaMlMZO-WT2A/exec')
+            .then(response => {
+                if (!(response.data.Aberto)) { window.location.href = '/' }
+                setTaxaEntregaApi(response.data.taxaEntrega)
+            })
+            .catch(error => {
+                console.error('Houve um problema com a requisição axios:', error.message);
+            });
 
-        if (cesta) {
-            let total = cesta.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
-            setCarrinho(cesta);
+        const carrinho = JSON.parse(sessionStorage.getItem('carrinho'));
+
+        if (carrinho && carrinho.length > 0) {
+            let total = carrinho.reduce((acc, item) => acc + parseFloat(item.preco) * item.quantidade, 0);
+            setCarrinho(carrinho);
             setValorTotal(total);
         } else {
-            window.location.href = '/';
+            window.location.href = '/cardapio';
         }
+
     }, []);
 
     const handleFormaEntrega = (forma) => {
@@ -92,13 +104,20 @@ function Pedido() {
     const handleEntregaClick = () => {
         if (entregaAtiva) {
             setEntregaAtiva(false);
+            handleFormaEntrega('');
+            setTaxaEntrega(0)
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         } else {
-
             setEntregaAtiva(true);
             setRetiradaAtiva(false);
             handleFormaEntrega("Entrega")
-            setTaxaEntrega(2)
-
+            setTaxaEntrega(taxaApi)
             setEndereco({
                 cep: '',
                 rua: '',
@@ -112,6 +131,14 @@ function Pedido() {
     const handleRetiradaClick = () => {
         if (retiradaAtiva) {
             setRetiradaAtiva(false);
+            handleFormaEntrega('');
+            setEndereco({
+                cep: '',
+                rua: '',
+                numero: '',
+                complemento: '',
+                bairro: '',
+            });
         } else {
             handleFormaEntrega("Retirada");
             setRetiradaAtiva(true);
@@ -208,9 +235,20 @@ function Pedido() {
         setCarrinho(carrinhoAtualizado);
         setValorTotal(novoValorTotal);
 
-        sessionStorage.setItem('cesta', JSON.stringify(carrinhoAtualizado));
+        sessionStorage.setItem('carrinho', JSON.stringify(carrinhoAtualizado));
         handleEditarItemClose();
     };
+
+    const removerItem = (itemId) => {
+        if (carrinho.length === 1) {
+            sessionStorage.clear()
+            window.location.reload()
+        } else {
+            const novoCarrinho = carrinho.filter(item => item.id !== itemId);
+            sessionStorage.setItem('carrinho', JSON.stringify(novoCarrinho));
+            window.location.reload()
+        }
+    }
 
     const handleCepChange = async (event) => {
         const cep = event.target.value ? event.target.value.replace('-', '') : '';
@@ -233,6 +271,8 @@ function Pedido() {
             toast.error('Nome inválido', { autoClose: 3000 });
         } else if (cliente.telefone.replace(/\D/g, '').length !== 11) {
             toast.error('Número de telefone inválido.', { autoClose: 3000 });
+        } else if (formaEntrega === '') {
+            toast.error('Selecione modo de entrega.', { autoClose: 3000 });
         } else if (formaEntrega === 'Entrega' && (endereco.rua === '' || endereco.numero === '')) {
             toast.error('Preencha o nome da rua e o número.', { autoClose: 3000 });
         } else if (formaPagamento === '') {
@@ -247,7 +287,14 @@ function Pedido() {
     }
 
     const handleConfirmarPedido = () => {
-        const dataHora = new Date();
+        const dataAtual = new Date();
+        const dia = dataAtual.getDate().toString().padStart(2, '0');
+        const mes = (dataAtual.getMonth() + 1).toString().padStart(2, '0');
+        const ano = dataAtual.getFullYear();
+        const hora = dataAtual.getHours().toString().padStart(2, '0');
+        const minuto = dataAtual.getMinutes().toString().padStart(2, '0');
+
+        const dataHora = `${hora}:${minuto} - ${dia}/${mes}/${ano}`;
         const clienteNome = cliente.nome.trim();
         const clienteTelefone = cliente.telefone;
         const carrinhoAtual = carrinho;
@@ -256,7 +303,7 @@ function Pedido() {
             forma: formaEntrega,
             rua: endereco.rua.trim(),
             numero: endereco.numero.trim(),
-            complemento: endereco.complemento.trim(),
+            complemento: endereco.complemento ? endereco.complemento.trim() : '',
             bairro: endereco.bairro.trim(),
         };
 
@@ -308,20 +355,19 @@ function Pedido() {
                                     <b>{item.quantidade}×</b> {item.nome}
                                 </span>
                                 <span>R$ {(item.preco * item.quantidade).toFixed(2).replace('.', ',')}</span>
-                                {/* <span>R$ {(parseFloat(item.preco.replace(',', '.')) * item.quantidade).toFixed(2).replace('.', ',')}</span> */}
                             </div>
                             <img src={editar} className={style.editar} />
                         </div>
                     ))}
                     {
                         modalEditarItem && (
-                            <EditarItem item={itemSelecionado} onSave={atualizarItem} onClose={handleEditarItemClose} />
+                            <EditarItem item={itemSelecionado} onSave={atualizarItem} removerItem={removerItem} onClose={handleEditarItemClose} />
                         )
                     }
                     <div className={style.container_item}>
                         <div className={style.item}>
                             <span>Taxa de entrega</span>
-                            <span>R$ {taxaEntrega.toFixed(2).replace('.', ',')}</span>
+                            <span>R$ {parseFloat(taxaEntrega).toFixed(2).replace('.', ',')}</span>
                         </div>
                     </div>
                     <div className={style.container_total}>
@@ -363,18 +409,17 @@ function Pedido() {
                         <span>Retirada</span>
                     </div>
                 </div>
-                {/* <div className={style.container_endereco}> */}
                 <div className={`${style.container_endereco} ${entregaAtiva ? '' : style.hidden}`}>
                     <div className={style.linha1}>
                         <div className={style.input_cep}>
-                            <span>Nome da Rua</span>
-                            <input type="text" value={endereco.rua} onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })} />
+                            <span>CEP</span>
+                            <InputMask type='tel' inputMode='numeric' mask="99999-999" placeholder="00000-000" maskChar=" " onChange={handleCepChange} defaultValue={endereco.cep} disabled={!entregaAtiva} />
                         </div>
                     </div>
                     <div className={style.linha2}>
                         <div className={style.input_rua}>
-                            <span>CEP</span>
-                            <InputMask type='tel' inputMode='numeric' mask="99999-999" placeholder="00000-000" maskChar=" " onChange={handleCepChange} defaultValue={endereco.cep} disabled={!entregaAtiva} />
+                            <span>Nome da Rua</span>
+                            <input type="text" value={endereco.rua} onChange={(e) => setEndereco({ ...endereco, rua: e.target.value })} />
                         </div>
                     </div>
                     <div className={style.linha3}>

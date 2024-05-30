@@ -1,0 +1,48 @@
+.prato {
+    /* width: 100%; */
+    /* background-color: #CAF0F8; */
+    display: flex;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.foto {
+    height: 90px;
+    min-height: 90px;
+    width: 115px;
+    min-width: 115px;
+    background-color: rgb(187, 187, 187);
+    border-radius: 5px;
+    object-fit: cover;
+}
+
+.container_texto {
+    padding-left: 10px;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    gap: 5px;
+}
+
+.container_texto>span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+}
+
+.container_texto>h3 {
+    font-weight: 700;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    /* background-color: red; */
+}
+
+.preco {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    font-weight: 700;
+}

@@ -14,31 +14,43 @@ import axios from 'axios';
 function PaginaPrato() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const [prato, setPrato] = useState(null);
+    const [pratos, setPratos] = useState([]);
+    const [prato, setPrato] = useState();
     const [quantidade, setQuantidade] = useState(1);
     const [observacao, setObservacao] = useState('');
 
-    function buscarPrato() {
+    function buscarPratos() {
         api.get()
             .then((respostaObtida) => {
-                setPrato(respostaObtida.data[id - 1]);
+                setPratos(respostaObtida.data);
             })
             .catch((erroOcorrido) => {
                 console.log('Erro ao obter os pratos:', erroOcorrido);
             });
     }
 
+    function encontrarPrato(id) {
+        const pratoEncontrado = pratos.find(prato => prato.ID === parseInt(id, 10));
+        setPrato(pratoEncontrado);
+    }
+
     useEffect(() => {
         axios.get('https://script.google.com/macros/s/AKfycbwHNN1j6cOpRmBoMC7nFPfTBbl8625lknKbbB0D7e61DxmyzdBhBEGKElAaMlMZO-WT2A/exec')
             .then(response => {
-                console.log(response.data)
-                if (!(response.data.Aberto)) { window.location.href = '/' }
+                if (!response.data.Aberto) {
+                    window.location.href = '/';
+                }
             })
             .catch(error => {
                 console.error('Houve um problema com a requisição axios:', error.message);
             });
-        buscarPrato();
-    }, [id]);
+
+        buscarPratos();
+    }, []);
+
+    useEffect(() => {
+        encontrarPrato(id);
+    }, [id, pratos]);
 
 
     const settings = {

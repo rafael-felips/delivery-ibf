@@ -49,6 +49,7 @@ function Cardapio() {
         api.get()
             .then((respostaObtida) => {
                 setPratos(respostaObtida.data);
+                console.log(respostaObtida.data)
             })
             .catch((erroOcorrido) => {
                 console.log('Erro ao obter os pratos:', erroOcorrido);

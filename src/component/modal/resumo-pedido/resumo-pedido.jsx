@@ -95,7 +95,10 @@ Obrigado pela preferência, se precisar de algo é só chamar! 😉`;
                         'Endereço': `${pedido.entrega.rua}, ${pedido.entrega.numero} ${pedido.entrega.complemento ? `${pedido.entrega.complemento}` : ''} - ${pedido.entrega.bairro}`,
                         'Forma de pagamento': pedido.pagamento.forma,
                         'Troco': pedido.pagamento.troco,
-                        'Total': valorTotal
+                        'Total': valorTotal,
+                        'Status de Pagamento': 'Pendente',
+                        'Status do Pedido': 'Em análise',
+                        'Valor Pago': 0
                     }
                 ]
             })
